@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: scorpio-octavious-vibe-lite
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /api/health
+    disk:
+      name: sov-lite-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: APP_SECRET
+        generateValue: true
+      - key: SOV_DB
+        value: /var/data/sov_lite.sqlite3
+      - key: TAPJOY_SECRET
+        sync: false
+      - key: TAPJOY_WEB_SDK_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
