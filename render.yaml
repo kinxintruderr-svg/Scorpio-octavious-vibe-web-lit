@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: scorpio-octavious-vibe-lite
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /api/health
+    disk:
+      name: sov-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TAPJOY_SECRET
+        sync: false
+      - key: TAPJOY_WEB_SDK_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        value: kinxintruder@gmail.com
+      - key: WITHDRAWAL_NOTIFY_EMAIL
+        value: kinxintruder@gmail.com
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: '587'
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: SOV_FEE_WALLET
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: SOV_DB
+        value: /var/data/sov.db
