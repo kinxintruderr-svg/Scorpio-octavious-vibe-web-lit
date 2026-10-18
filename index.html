@@ -323,7 +323,7 @@
 </script>
 
 <script>
-const API = (localStorage.getItem('sov_api_base') || 'https://scorpio-octavious-vibe-api.onrender.com').replace(/\/$/, '');
+const API = (localStorage.getItem('sov_api_base') || 'https://scorpio-octavious-vibe-web-lit.onrender.com/#auth').replace(/\/$/, '');
 let token = localStorage.getItem('sov_token') || '';
 let currentUser = null;
 try { currentUser = JSON.parse(localStorage.getItem('sov_user') || 'null'); } catch (_) { localStorage.removeItem('sov_user'); }
