@@ -1,0 +1,277 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Scorpio Octavious Vibe Lite</title>
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: #070b13; color: #f4f7ff;
+      font-family: Arial, sans-serif;
+    }
+    main { max-width: 650px; margin: auto; padding: 20px; }
+    .card {
+      background: #101522; border: 1px solid #244779;
+      border-radius: 16px; padding: 20px; margin: 16px 0;
+    }
+    h1, h2 { color: #69abff; }
+    .muted { color: #a8bad4; }
+    input, button {
+      width: 100%; padding: 13px; margin: 8px 0;
+      border-radius: 9px; font-size: 16px;
+    }
+    input {
+      color: white; background: #080d18;
+      border: 1px solid #285080;
+    }
+    button {
+      color: white; background: #075fe8;
+      border: 0; cursor: pointer; font-weight: bold;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    .amount { font-size: 32px; font-weight: bold; }
+    .hidden { display: none; }
+    #message { white-space: pre-wrap; overflow-wrap: anywhere; }
+    a { color: #69abff; }
+  </style>
+</head>
+<body>
+<main>
+  <header class="card">
+    <h1>🦂 Welcome to Scorpio Octavious Vibe Lite</h1>
+    <p class="muted">Connect • Earn • Withdraw</p>
+  </header>
+
+  <section id="login" class="card">
+    <h2>Google Sign-In</h2>
+    <p class="muted">Sign in to access your SOV Wallet.</p>
+    <div id="googleButton"></div>
+    <p class="muted">
+      Google sign-in must be configured by the SOV administrator.
+    </p>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="card">
+      <h2>My Account</h2>
+      <p id="userName"></p>
+      <p id="userEmail" class="muted"></p>
+      <button onclick="loadWallet()">Refresh wallet</button>
+    </div>
+
+    <div class="card">
+      <h2>💰 SOV Wallet</h2>
+      <p class="muted">Available balance (USD)</p>
+      <div id="available" class="amount">$0.00</div>
+      <p>Pending: <b id="pending">$0.00</b></p>
+      <p>Minimum payout: <b id="minimum">$90.00</b></p>
+      <p>Withdrawal fee: <b>50%</b></p>
+    </div>
+
+    <div class="card">
+      <h2>🎁 Earn</h2>
+      <p>Tapjoy offers and eligible AdMob ads will appear here once their real integrations are configured.</p>
+      <p class="muted">Rewards are credited only after provider verification.</p>
+      <div id="earningStatus" class="muted">Earning providers are not connected by this page yet.</div>
+    </div>
+
+    <div class="card">
+      <h2>Request Withdrawal</h2>
+      <p class="muted">Requests are subject to review and monthly payout processing.</p>
+      <label for="withdrawAmount">Amount in USD</label>
+      <input id="withdrawAmount" type="number"
+             min="90" step="0.01" placeholder="90.00">
+      <button id="withdrawButton" onclick="requestWithdrawal()">
+        Submit withdrawal request
+      </button>
+      <h3>My withdrawal requests</h3>
+      <button onclick="loadWithdrawals()">Refresh requests</button>
+      <div id="withdrawals" class="muted">No requests loaded.</div>
+    </div>
+
+    <div class="card">
+      <h2>Contact Support</h2>
+      <p>For missing eligible earnings or payout problems, contact:</p>
+      <a href="mailto:kinxintruder@gmail.com">kinxintruder@gmail.com</a>
+    </div>
+
+    <button onclick="signOut()">Sign out</button>
+  </section>
+
+  <p id="message" class="muted" role="status"></p>
+</main>
+
+<script>
+  // Replace these placeholders with your deployed configuration.
+  const API_BASE = "https://YOUR-BACKEND.onrender.com";
+  const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_WEB_CLIENT_ID";
+
+  let sessionToken = "";
+
+  const $ = id => document.getElementById(id);
+
+  function showMessage(text) {
+    $("message").textContent = text;
+  }
+
+  async function api(path, options = {}) {
+    const headers = { ...(options.headers || {}) };
+
+    if (options.body) headers["Content-Type"] = "application/json";
+    if (sessionToken) headers.Authorization = "Bearer " + sessionToken;
+
+    const response = await fetch(API_BASE + path, {
+      ...options,
+      headers
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || "Request failed.");
+    }
+
+    return data;
+  }
+
+  function onGoogleCredential(response) {
+    completeGoogleLogin(response.credential);
+  }
+
+  async function completeGoogleLogin(credential) {
+    try {
+      showMessage("Verifying Google sign-in…");
+
+      const result = await api("/api/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ credential })
+      });
+
+      sessionToken = result.token;
+      $("userName").textContent = result.user.name;
+      $("userEmail").textContent = result.user.email;
+
+      $("login").classList.add("hidden");
+      $("dashboard").classList.remove("hidden");
+
+      showMessage("Signed in successfully.");
+      await loadWallet();
+      await loadWithdrawals();
+    } catch (error) {
+      showMessage("Sign-in failed: " + error.message);
+    }
+  }
+
+  async function loadWallet() {
+    try {
+      const wallet = await api("/api/wallet");
+      $("available").textContent = "$" + wallet.available;
+      $("pending").textContent = "$" + wallet.pending;
+      $("minimum").textContent = "$" + wallet.minimum_payout;
+      showMessage("Wallet updated.");
+    } catch (error) {
+      showMessage("Could not load wallet: " + error.message);
+    }
+  }
+
+  async function requestWithdrawal() {
+    const amount = $("withdrawAmount").value;
+    const button = $("withdrawButton");
+
+    if (!amount || !Number.isFinite(Number(amount)) ||
+        Number(amount) < 90) {
+      showMessage("The minimum withdrawal request is $90 USD.");
+      return;
+    }
+
+    button.disabled = true;
+
+    try {
+      const result = await api("/api/withdrawals", {
+        method: "POST",
+        body: JSON.stringify({ amount })
+      });
+
+      const w = result.withdrawal;
+      showMessage(
+        "Request saved. Status: " + w.status +
+        "\nRequested: $" + w.requested +
+        "\nFee: $" + w.fee +
+        "\nNet payout: $" + w.net_payout
+      );
+
+      $("withdrawAmount").value = "";
+      await loadWallet();
+      await loadWithdrawals();
+    } catch (error) {
+      showMessage("Withdrawal failed: " + error.message);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function loadWithdrawals() {
+    try {
+      const result = await api("/api/withdrawals");
+      const container = $("withdrawals");
+      container.replaceChildren();
+
+      if (!result.withdrawals.length) {
+        container.textContent = "No withdrawal requests yet.";
+        return;
+      }
+
+      result.withdrawals.forEach(w => {
+        const item = document.createElement("p");
+        item.textContent =
+          "$" + w.requested + " requested · " +
+          "Net $" + w.net_payout + " · " + w.status +
+          " · " + new Date(w.created_at).toLocaleString();
+        container.appendChild(item);
+      });
+    } catch (error) {
+      showMessage("Could not load requests: " + error.message);
+    }
+  }
+
+  function signOut() {
+    sessionToken = "";
+    $("dashboard").classList.add("hidden");
+    $("login").classList.remove("hidden");
+    $("userName").textContent = "";
+    $("userEmail").textContent = "";
+    showMessage("Signed out.");
+  }
+
+  window.addEventListener("load", () => {
+    if (API_BASE.includes("YOUR-BACKEND") ||
+        GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE")) {
+      showMessage(
+        "Setup required: configure API_BASE and GOOGLE_CLIENT_ID."
+      );
+      return;
+    }
+
+    if (!window.google?.accounts?.id) {
+      showMessage("Google sign-in library is still loading. Refresh shortly.");
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: onGoogleCredential
+    });
+
+    google.accounts.id.renderButton($("googleButton"), {
+      theme: "filled_black",
+      size: "large",
+      shape: "pill",
+      text: "signin_with"
+    });
+  });
+</script>
+</body>
+</html>
