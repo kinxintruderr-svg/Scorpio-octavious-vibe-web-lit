@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOV Lite - Games & Rewards</title>
+<style>
+:root{--blue:#1677ff;--bg:#060910;--panel:#101725;--line:#24334b;--text:#fff;--muted:#aab8cc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{background:#090e18;border-bottom:1px solid var(--line);padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-weight:bold;font-size:19px}.brand span{color:var(--blue)}
+nav{display:flex;gap:8px;overflow-x:auto;padding:11px;background:#090e18}
+nav a{color:#dce8ff;background:#172235;padding:9px 12px;border-radius:9px;text-decoration:none;white-space:nowrap;font-size:13px}
+main{max-width:850px;margin:auto;padding:15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:15px}
+h2{font-size:18px;margin:0 0 12px}
+h3{font-size:16px;margin:10px 0}
+p{line-height:1.45}
+.muted,small{color:var(--muted)}
+button{border:0;border-radius:9px;padding:11px 13px;background:var(--blue);color:white;font-weight:bold;cursor:pointer}
+button.secondary{background:#26344a}
+button:disabled{opacity:.5;cursor:not-allowed}
+.balance{background:linear-gradient(135deg,#102d61,#101725);border:1px solid #2855a0}
+.amount{font-size:30px;font-weight:bold;color:#8abaff;margin:8px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.game{background:#0a101c;border:1px solid var(--line);border-radius:12px;padding:14px}
+.game-icon{font-size:35px}
+.tag{display:inline-block;background:#18375f;color:#b9d7ff;border-radius:6px;padding:5px 8px;font-size:12px}
+progress{width:100%;height:12px;accent-color:var(--blue)}
+input{width:100%;background:#080d16;color:white;border:1px solid #344258;border-radius:9px;padding:11px;margin:8px 0}
+.history-item{border-bottom:1px solid var(--line);padding:11px 0;overflow-wrap:anywhere}
+.history-item:last-child{border-bottom:0}
+.notice{background:#241e0c;border:1px solid #66531c;border-radius:9px;padding:12px;color:#ffe4a3;font-size:13px}
+footer{text-align:center;padding:20px;color:#77859a;font-size:12px}
+</style>
+<style id="sov-mobile-fit">
+
+/* SOV Lite Android / Median responsive safety layer */
+html{width:100%;max-width:100%;min-width:0;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+img,video,canvas,svg,iframe{max-width:100%}
+img,video{height:auto}
+input,select,textarea,button{max-width:100%;font:inherit}
+input,select,textarea{min-width:0}
+pre,code{white-space:pre-wrap;overflow-wrap:anywhere}
+p,h1,h2,h3,h4,a,button,label,small,span,div{overflow-wrap:anywhere}
+table{max-width:100%;width:100%;border-collapse:collapse}
+th,td{overflow-wrap:anywhere;word-break:normal}
+main,section,article,.card,.panel,.container,.content,.layout,.row,.grid,.wallets{min-width:0}
+nav{max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+nav a,nav button{flex:0 0 auto;white-space:nowrap}
+button,a,.btn,[role="button"]{touch-action:manipulation}
+button,.btn{min-height:40px}
+@media (max-width:700px){
+  header{padding:12px}
+  header h1,h1{font-size:clamp(19px,5vw,25px);line-height:1.25}
+  h2{font-size:clamp(17px,4.5vw,22px)}
+  main{width:100%;max-width:100%;padding:10px;margin-left:auto;margin-right:auto}
+  .layout,.columns,.content-grid,.two-column,.split-layout{display:flex!important;flex-direction:column!important;grid-template-columns:minmax(0,1fr)!important}
+  .layout>*,.columns>*,.content-grid>*,.two-column>*,.split-layout>*{width:100%;max-width:100%;min-width:0}
+  .card,.panel{padding:12px;border-radius:12px}
+  .row{flex-wrap:wrap}
+  form{max-width:100%;min-width:0}
+  input,select,textarea{width:100%;min-height:42px}
+  textarea{max-width:100%}
+  button,.btn{padding:11px 12px}
+  img,video{object-fit:contain}
+  .wallets{grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))}
+}
+@media (max-width:380px){
+  header{padding:10px}
+  main{padding:8px}
+  .card,.panel{padding:10px}
+  nav{gap:6px}
+  nav a,nav button{padding:9px 10px;font-size:13px}
+  button,.btn{font-size:14px}
+}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🦂 SOV <span>GAMES</span></div>
+  <span class="tag">Lite</span>
+</header>
+
+<nav>
+  <a href="index.html">Home Feed</a>
+  <a href="profile.html">Profile</a>
+  <a href="friends.html">Friends</a>
+  <a href="messages.html">Messages</a>
+  <a href="wallet.html">SOV Wallet</a>
+  <a href="reels.html">Reels</a>
+  <a href="games.html">Games & Rewards</a>
+</nav>
+
+<main>
+  <section class="panel balance">
+    <small>YOUR LOCAL TEST POINTS</small>
+    <div class="amount"><span id="points">0</span> SOV Points</div>
+    <p class="muted">Complete the available practice activities to test your points tracker.</p>
+    <button class="secondary" onclick="resetProgress()">Reset test progress</button>
+  </section>
+
+  <section class="panel">
+    <h2>🎮 Games & Activities</h2>
+    <p class="muted">Choose an activity. Each activity can award test points once per day in this browser.</p>
+    <div class="grid" id="gamesList"></div>
+  </section>
+
+  <section class="panel">
+    <h2>🏆 Daily progress</h2>
+    <p id="progressText">0 of 3 activities completed today</p>
+    <progress id="progressBar" max="3" value="0"></progress>
+    <p class="muted">Your progress updates when you complete a practice activity.</p>
+  </section>
+
+  <section class="panel">
+    <h2>📜 Reward history</h2>
+    <div id="history"><p class="muted">No activities completed yet.</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>💡 How rewards work</h2>
+    <p>Points earned here are for testing the SOV Lite interface. They are not real money, withdrawable SOV tokens, or guaranteed earnings.</p>
+    <div class="notice">Real game integrations, verified rewards, anti-cheat checks, and any withdrawals must be connected to a secure backend before launch.</div>
+  </section>
+</main>
+
+<footer>Scorpio Octavious Vibe · Games & Rewards · Local test version</footer>
+
+<script>
+const KEY = "sov_lite_games_test_v1";
+
+const activities = [
+  {id:"memory",icon:"🧠",name:"Memory Challenge",description:"Complete a short memory practice activity.",points:10},
+  {id:"daily",icon:"📅",name:"Daily Check-in",description:"Claim your daily practice reward.",points:5},
+  {id:"quiz",icon:"❓",name:"SOV Quick Quiz",description:"Answer a simple SOV practice question.",points:15}
+];
+
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function loadState(){
+  try{
+    const state=JSON.parse(localStorage.getItem(KEY)||"{}");
+    return {
+      points:Number(state.points)||0,
+      completed:state.completed||{},
+      history:Array.isArray(state.history)?state.history:[]
+    };
+  }catch(e){
+    return {points:0,completed:{},history:[]};
+  }
+}
+
+let state=loadState();
+
+function saveState(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(state));
+    return true;
+  }catch(e){
+    alert("Could not save progress in this browser.");
+    return false;
+  }
+}
+
+function completedToday(id){
+  return state.completed[id]===todayKey();
+}
+
+function renderGames(){
+  document.getElementById("gamesList").innerHTML=activities.map(a=>{
+    const done=completedToday(a.id);
+    return `
+      <article class="game">
+        <div class="game-icon">${a.icon}</div>
+        <h3>${a.name}</h3>
+        <p class="muted">${a.description}</p>
+        <p class="tag">+${a.points} test points</p>
+        <p><button ${done?"disabled":""} onclick="startActivity('${a.id}')">
+          ${done?"✓ Completed today":"Start activity"}
+        </button></p>
+      </article>`;
+  }).join("");
+}
+
+function startActivity(id){
+  const activity=activities.find(a=>a.id===id);
+  if(!activity||completedToday(id))return;
+
+  if(id==="quiz"){
+    const answer=prompt("Quick quiz: What does SOV stand for?\nA) Scorpio Octavious Vibe\nB) Super Online Video");
+    if(answer===null)return;
+    if(!["a","scorpio octavious vibe"].includes(answer.trim().toLowerCase())){
+      alert("Not quite! Try again.");
+      return;
+    }
+  }else if(id==="memory"){
+    const sequence=String(Math.floor(10+Math.random()*90));
+    alert("Memorise this number:\n\n"+sequence);
+    const answer=prompt("Enter the number you just saw:");
+    if(answer===null)return;
+    if(answer.trim()!==sequence){
+      alert("That number did not match. You can try again.");
+      return;
+    }
+  }else if(id==="daily"){
+    if(!confirm("Claim today's 5 local test points?"))return;
+  }
+
+  const oldPoints=state.points;
+  state.points+=activity.points;
+  state.completed[id]=todayKey();
+  state.history.unshift({
+    name:activity.name,
+    points:activity.points,
+    date:new Date().toLocaleString()
+  });
+  state.history=state.history.slice(0,50);
+
+  if(!saveState()){
+    state.points=oldPoints;
+    delete state.completed[id];
+    state.history.shift();
+    return;
+  }
+
+  render();
+  alert("Activity completed! +"+activity.points+" local test points 🦂💙");
+}
+
+function renderHistory(){
+  const el=document.getElementById("history");
+  if(!state.history.length){
+    el.innerHTML='<p class="muted">No activities completed yet.</p>';
+    return;
+  }
+  el.innerHTML=state.history.map(item=>`
+    <div class="history-item">
+      <strong>${escapeHTML(item.name)}</strong>
+      <span style="color:#70aaff"> +${Number(item.points)||0} points</span>
+      <br><small>${escapeHTML(item.date)}</small>
+    </div>
+  `).join("");
+}
+
+function escapeHTML(value){
+  return String(value??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function render(){
+  document.getElementById("points").textContent=state.points;
+  const count=activities.filter(a=>completedToday(a.id)).length;
+  document.getElementById("progressText").textContent=
+    count+" of "+activities.length+" activities completed today";
+  document.getElementById("progressBar").value=count;
+  renderGames();
+  renderHistory();
+}
+
+function resetProgress(){
+  if(!confirm("Reset all local test points and reward history?"))return;
+  state={points:0,completed:{},history:[]};
+  if(saveState())render();
+}
+
+render();
+</script>
+
+<!-- SOV Lite connected navigation (page links only; backend services are not activated by this menu) -->
+<style id="sov-connected-nav-style">
+#sov-connected-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:rgba(5,10,20,.97);border-top:1px solid #1d69ad;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:flex;gap:7px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#sov-connected-nav a{flex:0 0 auto;text-decoration:none;color:#eaf4ff;background:#101e31;border:1px solid #234a72;border-radius:10px;padding:9px 11px;font:600 12px Arial,sans-serif}#sov-connected-nav a:focus,#sov-connected-nav a:hover{background:#087fe5;color:#fff}body{padding-bottom:66px!important}
+</style>
+<nav id="sov-connected-nav" aria-label="SOV Lite pages">
+<a href="index.html">Home</a><a href="search.html">Search</a><a href="reels.html">Reels</a><a href="friends.html">Friends</a><a href="messages.html">Messages</a><a href="wallet.html">SOV Wallet</a><a href="sov-crypto.html">SOV Crypto</a><a href="earn.html">Earn</a><a href="games.html">Games</a><a href="boost-ads.html">Boost Ads</a><a href="notifications.html">Notifications</a><a href="profile.html">Profile</a><a href="business.html">Business</a><a href="settings.html">Settings</a><a href="admin.html">Admin</a><a href="terms.html">Terms</a><a href="support.html">Support</a>
+</nav>
+
+</body>
+</html>

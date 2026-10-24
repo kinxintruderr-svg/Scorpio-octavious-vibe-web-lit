@@ -1,0 +1,1 @@
+SOV Lite full-stack project. Read README.md and backend/README.md before deployment. Fake browser wallet balances and test earn points have been removed. Configure backend secrets and provider integrations before public launch. No deployment or live payments are claimed.

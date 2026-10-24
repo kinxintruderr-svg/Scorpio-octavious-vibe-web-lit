@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050914"><title>Continue with Google · SOV Lite</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#050914;color:#f4f8ff;font:16px Arial}.card{width:min(92vw,440px);background:#0d1628;border:1px solid #233755;border-radius:18px;padding:25px;text-align:center}h1{color:#42d9ff}.muted{color:#9aacc7;line-height:1.5}#status{margin-top:16px;color:#7fc1ff;overflow-wrap:anywhere}a{color:#42d9ff}</style><script src="config.js"></script><script src="https://accounts.google.com/gsi/client" async defer></script><style id="sov-mobile-fit">
+
+/* SOV Lite Android / Median responsive safety layer */
+html{width:100%;max-width:100%;min-width:0;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+img,video,canvas,svg,iframe{max-width:100%}
+img,video{height:auto}
+input,select,textarea,button{max-width:100%;font:inherit}
+input,select,textarea{min-width:0}
+pre,code{white-space:pre-wrap;overflow-wrap:anywhere}
+p,h1,h2,h3,h4,a,button,label,small,span,div{overflow-wrap:anywhere}
+table{max-width:100%;width:100%;border-collapse:collapse}
+th,td{overflow-wrap:anywhere;word-break:normal}
+main,section,article,.card,.panel,.container,.content,.layout,.row,.grid,.wallets{min-width:0}
+nav{max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+nav a,nav button{flex:0 0 auto;white-space:nowrap}
+button,a,.btn,[role="button"]{touch-action:manipulation}
+button,.btn{min-height:40px}
+@media (max-width:700px){
+  header{padding:12px}
+  header h1,h1{font-size:clamp(19px,5vw,25px);line-height:1.25}
+  h2{font-size:clamp(17px,4.5vw,22px)}
+  main{width:100%;max-width:100%;padding:10px;margin-left:auto;margin-right:auto}
+  .layout,.columns,.content-grid,.two-column,.split-layout{display:flex!important;flex-direction:column!important;grid-template-columns:minmax(0,1fr)!important}
+  .layout>*,.columns>*,.content-grid>*,.two-column>*,.split-layout>*{width:100%;max-width:100%;min-width:0}
+  .card,.panel{padding:12px;border-radius:12px}
+  .row{flex-wrap:wrap}
+  form{max-width:100%;min-width:0}
+  input,select,textarea{width:100%;min-height:42px}
+  textarea{max-width:100%}
+  button,.btn{padding:11px 12px}
+  img,video{object-fit:contain}
+  .wallets{grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))}
+}
+@media (max-width:380px){
+  header{padding:10px}
+  main{padding:8px}
+  .card,.panel{padding:10px}
+  nav{gap:6px}
+  nav a,nav button{padding:9px 10px;font-size:13px}
+  button,.btn{font-size:14px}
+}
+
+</style>
+</head><body><main class="card"><h1>🦂 Scorpio Octavious Vibe</h1><p class="muted">Sign in securely with your Google account.</p><div id="googleButton"></div><p id="status" role="status">Configure your Google Web Client ID in this page before sign-in can work.</p><p class="muted"><a href="index.html">Continue to Home</a></p></main><script src="api.js"></script><script>
+// Set the public Google OAuth Web Client ID below. Never put a client secret here.
+const GOOGLE_CLIENT_ID='YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com';
+function onGoogleCredential(response){document.getElementById('status').textContent='Verifying Google account with SOV backend…';SOV.api('/api/auth/google',{method:'POST',body:{credential:response.credential}}).then(d=>{sessionStorage.setItem('sov_access_token',d.access_token);document.getElementById('status').textContent='Signed in. Opening Home…';location.href='index.html'}).catch(e=>{document.getElementById('status').textContent=e.message})}
+window.addEventListener('load',()=>{if(GOOGLE_CLIENT_ID.startsWith('YOUR_')){document.getElementById('status').textContent='Set GOOGLE_CLIENT_ID in login.html and GOOGLE_CLIENT_ID in backend environment variables.';return}const wait=setInterval(()=>{if(window.google&&google.accounts&&google.accounts.id){clearInterval(wait);google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});google.accounts.id.renderButton(document.getElementById('googleButton'),{theme:'filled_blue',size:'large',text:'continue_with',shape:'rectangular',width:280})}},150)})</script></body></html>
