@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOV Lite - Search</title>
+<style>
+:root {
+  --bg: #05070d;
+  --card: #101725;
+  --blue: #168bff;
+  --text: #f4f7ff;
+  --muted: #9ba9bd;
+  --border: #24344c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 22px 16px;
+  background: linear-gradient(135deg, #07172c, #064a91);
+}
+header h1 { margin: 0 0 6px; font-size: 24px; }
+header p { margin: 0; color: #c8e1ff; font-size: 13px; }
+main { max-width: 680px; margin: auto; padding: 16px; }
+.searchbox { display: flex; gap: 8px; margin: 15px 0; }
+input, select, button { font: inherit; }
+input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px;
+  color: var(--text);
+  background: #0b111d;
+  border: 1px solid #31445e;
+  border-radius: 10px;
+}
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 13px;
+  color: white;
+  background: var(--blue);
+  font-weight: bold;
+  cursor: pointer;
+}
+button.secondary {
+  background: #1b293c;
+  border: 1px solid #334963;
+}
+button.following { background: #173e61; }
+.filters { display: flex; gap: 8px; margin: 12px 0 18px; }
+select {
+  width: 100%;
+  padding: 11px;
+  color: var(--text);
+  background: #101725;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.heading {
+  margin: 22px 0 12px;
+  font-size: 15px;
+  color: #69b7ff;
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  margin-bottom: 10px;
+}
+.avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #09539b, #10213b);
+  font-size: 23px;
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.details { flex: 1; min-width: 0; }
+.details strong { display: block; overflow-wrap: anywhere; }
+.details small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.actions { display: flex; flex-direction: column; gap: 6px; }
+.actions button { padding: 8px 10px; font-size: 12px; }
+.empty {
+  padding: 22px;
+  color: var(--muted);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.notice { color: var(--muted); font-size: 12px; line-height: 1.5; }
+footer { text-align: center; padding: 22px; color: #74859c; font-size: 12px; }
+@media (max-width: 390px) {
+  .user { gap: 8px; padding: 10px; }
+  .avatar { width: 43px; height: 43px; }
+  .actions button { padding: 8px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔍 Discover SOV</h1>
+  <p>Find people, meet friends and grow your community.</p>
+</header>
+
+<main>
+  <div class="searchbox">
+    <input id="query" type="search" placeholder="Search by nickname or country..." aria-label="Search users">
+    <button onclick="renderUsers()">Search</button>
+  </div>
+
+  <div class="filters">
+    <select id="filter" aria-label="Filter users" onchange="renderUsers()">
+      <option value="all">Everyone</option>
+      <option value="suggested">Suggested</option>
+      <option value="following">Following</option>
+    </select>
+  </div>
+
+  <div class="heading">🌍 Discover people</div>
+  <div id="results"></div>
+  <p class="notice">These are sample profiles for testing. Follow actions are saved locally on this device, not sent to real users.</p>
+
+  <div class="heading">⚡ Quick links</div>
+  <div class="user">
+    <div class="avatar">👥</div>
+    <div class="details">
+      <strong>Find Friends</strong>
+      <small>Manage friend requests and connections.</small>
+    </div>
+    <button class="secondary" onclick="goTo('friends.html')">Open</button>
+  </div>
+  <div class="user">
+    <div class="avatar">👤</div>
+    <div class="details">
+      <strong>Your Profile</strong>
+      <small>View your profile settings.</small>
+    </div>
+    <button class="secondary" onclick="goTo('profile.html')">Open</button>
+  </div>
+  <div class="user">
+    <div class="avatar">🏠</div>
+    <div class="details">
+      <strong>Home Feed</strong>
+      <small>Return to your social feed.</small>
+    </div>
+    <button class="secondary" onclick="goTo('index.html')">Open</button>
+  </div>
+  <p id="status" class="notice" role="status" aria-live="polite"></p>
+</main>
+
+<footer>🦂 Scorpio Octavious Vibe Lite</footer>
+
+<script>
+const USERS_KEY = "sov_lite_search_follows_v1";
+
+const sampleUsers = [
+  { id: "user01", name: "Nova Scorpio", handle: "@nova_sc", country: "South Africa", bio: "Music, friends and good vibes.", emoji: "🦂" },
+  { id: "user02", name: "Blue Phoenix", handle: "@bluephoenix", country: "United States", bio: "Creator and video lover.", emoji: "🔥" },
+  { id: "user03", name: "Luna Star", handle: "@lunastar", country: "United Kingdom", bio: "Sharing moments and creativity.", emoji: "🌙" },
+  { id: "user04", name: "Jay Vibe", handle: "@jayvibe", country: "Nigeria", bio: "Gaming, music and community.", emoji: "🎧" },
+  { id: "user05", name: "Sky Legend", handle: "@skylegend", country: "India", bio: "Here to connect with people.", emoji: "🌍" },
+  { id: "user06", name: "Ocean Dream", handle: "@oceandream", country: "Brazil", bio: "Photos, reels and adventures.", emoji: "🌊" }
+];
+
+function readFollows() {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function toggleFollow(id) {
+  let follows = readFollows();
+  if (follows.includes(id)) {
+    follows = follows.filter(item => item !== id);
+    showStatus("Sample profile unfollowed.");
+  } else {
+    follows.push(id);
+    showStatus("Following sample profile.");
+  }
+  localStorage.setItem(USERS_KEY, JSON.stringify(follows));
+  renderUsers();
+}
+
+function renderUsers() {
+  const query = document.getElementById("query").value.trim().toLowerCase();
+  const filter = document.getElementById("filter").value;
+  const follows = readFollows();
+
+  const results = sampleUsers.filter(user => {
+    const matches = [user.name, user.handle, user.country, user.bio]
+      .some(value => value.toLowerCase().includes(query));
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "suggested" && !follows.includes(user.id)) ||
+      (filter === "following" && follows.includes(user.id));
+    return matches && matchesFilter;
+  });
+
+  const container = document.getElementById("results");
+  if (!results.length) {
+    container.innerHTML = '<div class="empty">No matching sample profiles found. Try another search.</div>';
+    return;
+  }
+
+  container.replaceChildren();
+  results.forEach(user => {
+    const card = document.createElement("div");
+    card.className = "user";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = user.emoji;
+
+    const details = document.createElement("div");
+    details.className = "details";
+
+    const name = document.createElement("strong");
+    name.textContent = user.name;
+
+    const meta = document.createElement("small");
+    meta.textContent = user.handle + " · " + user.country;
+
+    const bio = document.createElement("small");
+    bio.textContent = user.bio;
+
+    details.append(name, meta, bio);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const follow = document.createElement("button");
+    follow.textContent = follows.includes(user.id) ? "Following ✓" : "＋ Follow";
+    follow.className = follows.includes(user.id) ? "following" : "";
+    follow.onclick = () => toggleFollow(user.id);
+
+    const view = document.createElement("button");
+    view.textContent = "View";
+    view.className = "secondary";
+    view.onclick = () => {
+      showStatus("Sample profile: " + user.name + " (" + user.country + "). Real profile pages will be connected later.");
+    };
+
+    actions.append(follow, view);
+    card.append(avatar, details, actions);
+    container.append(card);
+  });
+}
+
+function showStatus(message) {
+  document.getElementById("status").textContent = message;
+}
+
+function goTo(page) {
+  window.location.href = page;
+}
+
+document.getElementById("query").addEventListener("keydown", event => {
+  if (event.key === "Enter") renderUsers();
+});
+
+renderUsers();
+</script>
+</body>
+</html>
