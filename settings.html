@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOV Lite - Settings</title>
+<style>
+:root {
+  --bg: #05070d;
+  --card: #101725;
+  --blue: #168bff;
+  --text: #f4f7ff;
+  --muted: #9ba9bd;
+  --border: #24344c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 22px 16px;
+  background: linear-gradient(135deg, #07172c, #063d78);
+  border-bottom: 1px solid var(--border);
+}
+header h1 { margin: 0 0 6px; font-size: 23px; }
+header p { margin: 0; color: #c7dfff; font-size: 13px; }
+main { max-width: 650px; margin: auto; padding: 16px; }
+.section-title { font-size: 15px; color: #66b4ff; margin: 22px 0 10px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 15px;
+  margin-bottom: 12px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.row + .row { margin-top: 15px; }
+.symbol {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #102b4a;
+  font-size: 21px;
+}
+.info { flex: 1; min-width: 0; }
+.info strong { display: block; font-size: 14px; }
+.info small { display: block; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+button, select, input, textarea {
+  font: inherit;
+}
+button {
+  background: var(--blue);
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button.secondary {
+  background: #1b293c;
+  border: 1px solid #334963;
+}
+button.danger { background: #8d2638; }
+button:active { opacity: .8; }
+input[type="text"], textarea, select {
+  width: 100%;
+  padding: 12px;
+  background: #080e18;
+  border: 1px solid #31445e;
+  border-radius: 9px;
+  color: var(--text);
+  margin-top: 7px;
+}
+textarea { min-height: 75px; resize: vertical; }
+.field { margin: 14px 0; }
+.field label { font-size: 13px; color: #c6d3e5; }
+.switch {
+  width: 46px;
+  height: 26px;
+  position: relative;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.track {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: #364254;
+  cursor: pointer;
+}
+.track:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: .2s;
+}
+.switch input:checked + .track { background: var(--blue); }
+.switch input:checked + .track:before { transform: translateX(20px); }
+.notice {
+  color: #b5c7dc;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 12px;
+}
+.status { color: #76bdff; font-size: 12px; margin-top: 10px; }
+footer {
+  text-align: center;
+  color: #74859c;
+  padding: 20px;
+  font-size: 12px;
+}
+a { color: #65b4ff; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚙️ Settings & Services</h1>
+  <p>Scorpio Octavious Vibe Lite · Your app preferences</p>
+</header>
+
+<main>
+  <div class="section-title">👤 ACCOUNT & PROFILE</div>
+  <section class="card">
+    <div class="row">
+      <div class="symbol">🦂</div>
+      <div class="info">
+        <strong>Account settings</strong>
+        <small>Manage your display name and profile preferences.</small>
+      </div>
+    </div>
+    <div class="field">
+      <label for="nickname">Display name</label>
+      <input id="nickname" type="text" maxlength="40" placeholder="Enter your nickname">
+    </div>
+    <div class="field">
+      <label for="bio">About you</label>
+      <textarea id="bio" maxlength="180" placeholder="Write a short profile description"></textarea>
+    </div>
+    <button onclick="saveProfile()">Save profile settings</button>
+  </section>
+
+  <div class="section-title">🔔 NOTIFICATIONS</div>
+  <section class="card">
+    <div class="row">
+      <div class="info">
+        <strong>Friend and follow alerts</strong>
+        <small>Show preference for friend and follow notifications.</small>
+      </div>
+      <label class="switch">
+        <input id="friendAlerts" type="checkbox" checked>
+        <span class="track"></span>
+      </label>
+    </div>
+    <div class="row">
+      <div class="info">
+        <strong>Messages</strong>
+        <small>Show preference for message notifications.</small>
+      </div>
+      <label class="switch">
+        <input id="messageAlerts" type="checkbox" checked>
+        <span class="track"></span>
+      </label>
+    </div>
+    <div class="row">
+      <div class="info">
+        <strong>Games and rewards</strong>
+        <small>Show preference for game and reward alerts.</small>
+      </div>
+      <label class="switch">
+        <input id="rewardAlerts" type="checkbox" checked>
+        <span class="track"></span>
+      </label>
+    </div>
+    <div class="row">
+      <div class="info">
+        <strong>Promotions and Boost Ads</strong>
+        <small>Show preference for promotional updates.</small>
+      </div>
+      <label class="switch">
+        <input id="promoAlerts" type="checkbox">
+        <span class="track"></span>
+      </label>
+    </div>
+    <button onclick="savePreferences()">Save notification preferences</button>
+  </section>
+
+  <div class="section-title">🛠️ SOV SERVICES</div>
+  <section class="card">
+    <div class="row">
+      <div class="symbol">💰</div>
+      <div class="info">
+        <strong>SOV Wallet</strong>
+        <small>View the wallet page. Real transfers require the connected backend.</small>
+      </div>
+      <button class="secondary" onclick="goTo('wallet.html')">Open</button>
+    </div>
+    <div class="row">
+      <div class="symbol">🎁</div>
+      <div class="info">
+        <strong>Earn / Tapjoy</strong>
+        <small>Open the earning page. Real offerwall rewards need provider configuration.</small>
+      </div>
+      <button class="secondary" onclick="goTo('earn.html')">Open</button>
+    </div>
+    <div class="row">
+      <div class="symbol">📣</div>
+      <div class="info">
+        <strong>Boost Ads</strong>
+        <small>View your advertising campaign drafts.</small>
+      </div>
+      <button class="secondary" onclick="goTo('boost-ads.html')">Open</button>
+    </div>
+    <div class="row">
+      <div class="symbol">🎮</div>
+      <div class="info">
+        <strong>Games & Rewards</strong>
+        <small>Open the games page.</small>
+      </div>
+      <button class="secondary" onclick="goTo('games.html')">Open</button>
+    </div>
+    <p class="notice">Services may be local-only until the app's backend and provider integrations are connected.</p>
+  </section>
+
+  <div class="section-title">🔐 PRIVACY & SECURITY</div>
+  <section class="card">
+    <div class="row">
+      <div class="info">
+        <strong>Keep me signed in</strong>
+        <small>Preference only; real session management will be added later.</small>
+      </div>
+      <label class="switch">
+        <input id="staySignedIn" type="checkbox">
+        <span class="track"></span>
+      </label>
+    </div>
+    <div class="field">
+      <label for="visibility">Profile visibility</label>
+      <select id="visibility">
+        <option value="public">Public</option>
+        <option value="friends">Friends only</option>
+        <option value="private">Private</option>
+      </select>
+    </div>
+    <button onclick="savePreferences()">Save privacy preferences</button>
+    <p class="notice">These browser settings are not account security controls. Do not enter passwords or secret keys here.</p>
+  </section>
+
+  <div class="section-title">ℹ️ ABOUT SOV LITE</div>
+  <section class="card">
+    <div class="row">
+      <div class="info">
+        <strong>Scorpio Octavious Vibe Lite</strong>
+        <small>Social connection, entertainment and earning features in one place.</small>
+      </div>
+    </div>
+    <p class="notice">Google Sign-In, AdMob, Tapjoy, wallet transactions and monthly reporting will be connected and tested during the integration stage.</p>
+    <button class="secondary" onclick="showInfo()">App information</button>
+    <button class="secondary" onclick="goTo('index.html')">Home Feed</button>
+    <p id="appInfo" class="status"></p>
+  </section>
+
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+</main>
+
+<footer>🦂 Scorpio Octavious Vibe · SOV Lite</footer>
+
+<script>
+const PROFILE_KEY = "sov_lite_profile_v1";
+const SETTINGS_KEY = "sov_lite_settings_v1";
+
+function readStore(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function showStatus(message) {
+  document.getElementById("status").textContent = message;
+}
+
+function loadSettings() {
+  const profile = readStore(PROFILE_KEY, {});
+  const settings = readStore(SETTINGS_KEY, {});
+
+  document.getElementById("nickname").value =
+    profile.nickname || localStorage.getItem("sov_username") || "";
+  document.getElementById("bio").value = profile.bio || "";
+
+  for (const id of [
+    "friendAlerts", "messageAlerts", "rewardAlerts",
+    "promoAlerts", "staySignedIn"
+  ]) {
+    if (typeof settings[id] === "boolean") {
+      document.getElementById(id).checked = settings[id];
+    }
+  }
+
+  document.getElementById("visibility").value =
+    settings.visibility || "public";
+}
+
+function saveProfile() {
+  const profile = readStore(PROFILE_KEY, {});
+  profile.nickname = document.getElementById("nickname").value.trim();
+  profile.bio = document.getElementById("bio").value.trim();
+
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+  if (profile.nickname) {
+    localStorage.setItem("sov_username", profile.nickname);
+  }
+
+  showStatus("Profile settings saved on this device.");
+}
+
+function savePreferences() {
+  const settings = {};
+  for (const id of [
+    "friendAlerts", "messageAlerts", "rewardAlerts",
+    "promoAlerts", "staySignedIn"
+  ]) {
+    settings[id] = document.getElementById(id).checked;
+  }
+  settings.visibility = document.getElementById("visibility").value;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  showStatus("Preferences saved on this device.");
+}
+
+function goTo(page) {
+  window.location.href = page;
+}
+
+function showInfo() {
+  document.getElementById("appInfo").textContent =
+    "SOV Lite · Black and blue edition · Settings page v1.0";
+}
+
+loadSettings();
+</script>
+
+
+<!-- SOV Lite connected navigation (page links only; backend services are not activated by this menu) -->
+<style id="sov-connected-nav-style">
+#sov-connected-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:rgba(5,10,20,.97);border-top:1px solid #1d69ad;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:flex;gap:7px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#sov-connected-nav a{flex:0 0 auto;text-decoration:none;color:#eaf4ff;background:#101e31;border:1px solid #234a72;border-radius:10px;padding:9px 11px;font:600 12px Arial,sans-serif}#sov-connected-nav a:focus,#sov-connected-nav a:hover{background:#087fe5;color:#fff}body{padding-bottom:66px!important}
+</style>
+<nav id="sov-connected-nav" aria-label="SOV Lite pages">
+<a href="index.html">Home</a><a href="search.html">Search</a><a href="reels.html">Reels</a><a href="friends.html">Friends</a><a href="messages.html">Messages</a><a href="wallet.html">SOV Wallet</a><a href="sov-crypto.html">SOV Crypto</a><a href="earn.html">Earn</a><a href="games.html">Games</a><a href="boost-ads.html">Boost Ads</a><a href="notifications.html">Notifications</a><a href="profile.html">Profile</a><a href="business.html">Business</a><a href="settings.html">Settings</a><a href="admin.html">Admin</a><a href="terms.html">Terms</a><a href="support.html">Support</a>
+</nav>
+
+</body>
+</html>

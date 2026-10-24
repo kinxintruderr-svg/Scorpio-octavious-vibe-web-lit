@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b12">
+<title>SOV Lite | Profile</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080b12;color:#f5f8ff;font-family:Arial,sans-serif}
+header{background:#101827;padding:16px;border-bottom:1px solid #25466a}
+h1{margin:0;color:#36a5ff;font-size:23px}
+main{max-width:620px;margin:auto;padding:15px}
+.card{background:#111a29;border:1px solid #263e59;border-radius:14px;padding:16px;margin-bottom:15px}
+.avatar{width:100px;height:100px;object-fit:cover;border-radius:50%;background:#253750;border:3px solid #1687ff}
+button,.upload{display:inline-block;background:#087fe5;color:#fff;border:0;border-radius:9px;padding:12px 15px;margin:5px 4px 5px 0;font-weight:bold;cursor:pointer}
+.secondary{background:#23344b}
+input,textarea{width:100%;background:#080b12;color:#fff;border:1px solid #345071;border-radius:9px;padding:12px;margin:8px 0;font:inherit}
+textarea{min-height:80px}
+.muted{color:#aab9cc;font-size:13px}
+#photoInput{display:none}
+.stats{display:flex;gap:25px;flex-wrap:wrap;margin:16px 0}
+.stat strong{display:block;color:#36a5ff;font-size:20px}
+.post{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header>
+  <h1>🦂 SOV Lite</h1>
+  <p class="muted">Your Profile</p>
+</header>
+
+<main>
+  <section class="card">
+    <div style="text-align:center">
+      <img id="avatar" class="avatar"
+        alt="Profile photo"
+        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' rx='50' fill='%23253f60'/%3E%3Ctext x='50' y='65' font-size='48' text-anchor='middle' fill='%2355b7ff'%3ES%3C/text%3E%3C/svg%3E">
+      <h2 id="displayName">SOV Member</h2>
+      <p id="displayBio" class="muted">Welcome to my SOV Lite profile!</p>
+      <label for="photoInput" class="upload">Change profile photo</label>
+      <input id="photoInput" type="file" accept="image/*">
+    </div>
+
+    <div class="stats">
+      <div class="stat"><strong id="postCount">0</strong><span>Posts</span></div>
+      <div class="stat"><strong>0</strong><span>Friends</span></div>
+      <div class="stat"><strong>0</strong><span>Followers</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Edit profile</h3>
+    <label for="nickname">Nickname</label>
+    <input id="nickname" maxlength="40" placeholder="Enter your nickname">
+
+    <label for="bio">Bio</label>
+    <textarea id="bio" maxlength="300" placeholder="Tell people about yourself"></textarea>
+
+    <button id="save">Save profile</button>
+    <button class="secondary" id="reset">Reset form</button>
+    <p id="status" class="muted">Changes are local to this test page.</p>
+  </section>
+
+  <section class="card">
+    <h3>My posts</h3>
+    <p class="muted">Posts will appear here after we connect this page to the Home Feed.</p>
+    <div id="myPosts"></div>
+  </section>
+
+  <button onclick="location.href='index.html'">← Back to Home Feed</button>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const defaultAvatar = $('avatar').src;
+let photoUrl = null;
+
+$('photoInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    $('status').textContent = 'Please select an image.';
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    $('status').textContent = 'Choose an image smaller than 5 MB.';
+    return;
+  }
+  if (photoUrl) URL.revokeObjectURL(photoUrl);
+  photoUrl = URL.createObjectURL(file);
+  $('avatar').src = photoUrl;
+  $('status').textContent = 'Photo preview updated.';
+});
+
+$('save').onclick = () => {
+  const name = $('nickname').value.trim();
+  const bio = $('bio').value.trim();
+  $('displayName').textContent = name || 'SOV Member';
+  $('displayBio').textContent = bio || 'Welcome to my SOV Lite profile!';
+  $('status').textContent =
+    'Profile updated for this test. Server saving is not connected.';
+};
+
+$('reset').onclick = () => {
+  $('nickname').value = '';
+  $('bio').value = '';
+  $('displayName').textContent = 'SOV Member';
+  $('displayBio').textContent = 'Welcome to my SOV Lite profile!';
+  $('avatar').src = defaultAvatar;
+  if (photoUrl) URL.revokeObjectURL(photoUrl);
+  photoUrl = null;
+  $('photoInput').value = '';
+  $('status').textContent = 'Form reset.';
+};
+</script>
+
+<!-- SOV Lite connected navigation (page links only; backend services are not activated by this menu) -->
+<style id="sov-connected-nav-style">
+#sov-connected-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:rgba(5,10,20,.97);border-top:1px solid #1d69ad;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:flex;gap:7px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#sov-connected-nav a{flex:0 0 auto;text-decoration:none;color:#eaf4ff;background:#101e31;border:1px solid #234a72;border-radius:10px;padding:9px 11px;font:600 12px Arial,sans-serif}#sov-connected-nav a:focus,#sov-connected-nav a:hover{background:#087fe5;color:#fff}body{padding-bottom:66px!important}
+</style>
+<nav id="sov-connected-nav" aria-label="SOV Lite pages">
+<a href="index.html">Home</a><a href="search.html">Search</a><a href="reels.html">Reels</a><a href="friends.html">Friends</a><a href="messages.html">Messages</a><a href="wallet.html">SOV Wallet</a><a href="sov-crypto.html">SOV Crypto</a><a href="earn.html">Earn</a><a href="games.html">Games</a><a href="boost-ads.html">Boost Ads</a><a href="notifications.html">Notifications</a><a href="profile.html">Profile</a><a href="business.html">Business</a><a href="settings.html">Settings</a><a href="admin.html">Admin</a><a href="terms.html">Terms</a><a href="support.html">Support</a>
+</nav>
+
+</body>
+</html>

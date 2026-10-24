@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#05070d">
+<title>SOV Lite - Help & Support</title>
+<style>
+:root {
+  --bg:#05070d; --card:#101725; --blue:#168bff;
+  --text:#f4f7ff; --muted:#a5b2c5; --border:#26374e;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header {
+  padding:24px 17px;
+  background:linear-gradient(135deg,#07172c,#0752a0);
+}
+header h1 { margin:0 0 6px; font-size:24px; }
+header p { margin:0; color:#d2e7ff; font-size:13px; }
+main { max-width:680px; margin:auto; padding:16px; }
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:16px; margin-bottom:14px;
+}
+h2 { font-size:17px; color:#69b7ff; margin:0 0 13px; }
+p { line-height:1.55; }
+label { display:block; font-size:13px; color:#d2deee; margin:13px 0 6px; }
+input, select, textarea, button { font:inherit; }
+input, select, textarea {
+  width:100%; padding:12px; color:var(--text);
+  background:#080e18; border:1px solid #31445e;
+  border-radius:9px;
+}
+textarea { min-height:110px; resize:vertical; }
+button {
+  cursor:pointer; padding:11px 14px; border:0;
+  border-radius:9px; color:white; background:var(--blue);
+  font-weight:bold;
+}
+button.secondary { background:#1b293c; border:1px solid #334963; }
+button.danger { background:#87283a; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+.actions button { flex:1; }
+.topic {
+  background:#0b111d; border:1px solid var(--border);
+  border-radius:11px; padding:13px; margin-top:9px;
+}
+.topic strong { display:block; }
+.topic p { font-size:13px; color:var(--muted); margin-bottom:0; }
+.status { color:#7fc1ff; font-size:13px; line-height:1.5; margin-top:12px; }
+.muted { color:var(--muted); font-size:12px; line-height:1.6; }
+.ticket {
+  border:1px solid var(--border); border-radius:11px;
+  padding:13px; margin-top:10px; background:#0b111d;
+}
+.ticket strong { display:block; overflow-wrap:anywhere; }
+.ticket small { color:var(--muted); display:block; margin-top:5px; }
+.badge {
+  display:inline-block; background:#163655; color:#b6dcff;
+  border-radius:20px; padding:4px 8px; font-size:11px; margin-top:8px;
+}
+.empty { text-align:center; color:var(--muted); padding:20px; border:1px dashed var(--border); border-radius:10px; }
+footer { text-align:center; color:#74859c; padding:22px; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🛟 Help & Support</h1>
+  <p>Scorpio Octavious Vibe Lite · We're here to help</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>👋 What do you need help with?</h2>
+
+    <div class="topic">
+      <strong>🔐 Account & Profile</strong>
+      <p>Nickname, profile picture, account access or sign-in problems.</p>
+    </div>
+    <div class="topic">
+      <strong>💰 SOV Wallet</strong>
+      <p>Balance display, transaction history, withdrawal requests or fees.</p>
+    </div>
+    <div class="topic">
+      <strong>🎁 Earn & Tapjoy</strong>
+      <p>Missing rewards, offer completion or earning-page problems.</p>
+    </div>
+    <div class="topic">
+      <strong>📣 Boost Ads</strong>
+      <p>Campaign drafts, payments or campaign delivery questions.</p>
+    </div>
+    <div class="topic">
+      <strong>🐞 Bug report</strong>
+      <p>Tell us which page is broken and what happened.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>✉️ Create a support request</h2>
+    <form id="supportForm">
+      <label for="category">Issue category *</label>
+      <select id="category" required>
+        <option value="">Choose a category</option>
+        <option>Account & Profile</option>
+        <option>Wallet & Withdrawals</option>
+        <option>Earn & Tapjoy</option>
+        <option>Boost Ads</option>
+        <option>Messages & Friends</option>
+        <option>Reels & Home Feed</option>
+        <option>Games & Rewards</option>
+        <option>Privacy or Safety</option>
+        <option>Bug Report</option>
+        <option>Other</option>
+      </select>
+
+      <label for="subject">Short subject *</label>
+      <input id="subject" maxlength="100" required placeholder="e.g. My nickname is not showing">
+
+      <label for="details">Describe the problem *</label>
+      <textarea id="details" maxlength="2000" required placeholder="Tell us what happened and which page you were using. Please do not include passwords, private keys or sensitive financial details."></textarea>
+
+      <label for="contact">Contact email (optional)</label>
+      <input id="contact" type="email" maxlength="160" placeholder="Your email address">
+
+      <div class="actions">
+        <button type="submit">Save support request</button>
+        <button type="reset" class="secondary">Clear form</button>
+      </div>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <p class="muted">Local test only: saving a request here does not send an email or notify the SOV team. We'll connect secure submission during backend integration.</p>
+  </section>
+
+  <section class="card">
+    <h2>📋 My saved requests</h2>
+    <div id="tickets"></div>
+    <div class="actions">
+      <button class="secondary" onclick="loadTickets()">Refresh list</button>
+      <button class="danger" onclick="clearTickets()">Clear local requests</button>
+    </div>
+    <p class="muted">Requests are stored in this browser on this device. Clearing browser data may remove them.</p>
+  </section>
+
+  <section class="card">
+    <h2>🔗 Quick links</h2>
+    <div class="actions">
+      <button class="secondary" onclick="goTo('index.html')">Home Feed</button>
+      <button class="secondary" onclick="goTo('wallet.html')">SOV Wallet</button>
+      <button class="secondary" onclick="goTo('earn.html')">Earn / Tapjoy</button>
+      <button class="secondary" onclick="goTo('boost-ads.html')">Boost Ads</button>
+      <button class="secondary" onclick="goTo('settings.html')">Settings</button>
+      <button class="secondary" onclick="goTo('terms.html')">Terms & Privacy</button>
+    </div>
+  </section>
+</main>
+
+<footer>🦂 Scorpio Octavious Vibe Lite</footer>
+
+<script>
+const STORAGE_KEY = "sov_lite_support_requests_v1";
+
+function readTickets() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeTickets(tickets) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  })[ch]);
+}
+
+function showStatus(message) {
+  document.getElementById("status").textContent = message;
+}
+
+document.getElementById("supportForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const ticket = {
+    id: "SOV-" + Date.now().toString(36).toUpperCase(),
+    category: document.getElementById("category").value,
+    subject: document.getElementById("subject").value.trim(),
+    details: document.getElementById("details").value.trim(),
+    contact: document.getElementById("contact").value.trim(),
+    createdAt: new Date().toLocaleString(),
+    status: "Saved locally"
+  };
+
+  if (!ticket.category || !ticket.subject || !ticket.details) {
+    showStatus("Please complete all required fields.");
+    return;
+  }
+
+  const tickets = readTickets();
+  tickets.unshift(ticket);
+  writeTickets(tickets);
+  document.getElementById("supportForm").reset();
+  showStatus("Request saved on this device. It has not been sent to support.");
+  loadTickets();
+});
+
+function loadTickets() {
+  const container = document.getElementById("tickets");
+  const tickets = readTickets();
+  container.replaceChildren();
+
+  if (!tickets.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No saved support requests yet.";
+    container.append(empty);
+    return;
+  }
+
+  tickets.forEach(ticket => {
+    const card = document.createElement("div");
+    card.className = "ticket";
+
+    const title = document.createElement("strong");
+    title.textContent = ticket.subject;
+
+    const meta = document.createElement("small");
+    meta.textContent = ticket.id + " · " + ticket.category + " · " + ticket.createdAt;
+
+    const details = document.createElement("p");
+    details.textContent = ticket.details;
+    details.style.fontSize = "13px";
+    details.style.whiteSpace = "pre-wrap";
+
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = ticket.status;
+
+    card.append(title, meta, details, badge);
+    container.append(card);
+  });
+}
+
+function clearTickets() {
+  if (!readTickets().length) {
+    showStatus("There are no saved requests to clear.");
+    return;
+  }
+  if (!confirm("Delete all support requests saved on this device?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  loadTickets();
+  showStatus("Local support requests cleared.");
+}
+
+function goTo(page) {
+  window.location.href = page;
+}
+
+loadTickets();
+</script>
+
+<!-- SOV Lite connected navigation (page links only; backend services are not activated by this menu) -->
+<style id="sov-connected-nav-style">
+#sov-connected-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:rgba(5,10,20,.97);border-top:1px solid #1d69ad;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:flex;gap:7px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#sov-connected-nav a{flex:0 0 auto;text-decoration:none;color:#eaf4ff;background:#101e31;border:1px solid #234a72;border-radius:10px;padding:9px 11px;font:600 12px Arial,sans-serif}#sov-connected-nav a:focus,#sov-connected-nav a:hover{background:#087fe5;color:#fff}body{padding-bottom:66px!important}
+</style>
+<nav id="sov-connected-nav" aria-label="SOV Lite pages">
+<a href="index.html">Home</a><a href="search.html">Search</a><a href="reels.html">Reels</a><a href="friends.html">Friends</a><a href="messages.html">Messages</a><a href="wallet.html">SOV Wallet</a><a href="sov-crypto.html">SOV Crypto</a><a href="earn.html">Earn</a><a href="games.html">Games</a><a href="boost-ads.html">Boost Ads</a><a href="notifications.html">Notifications</a><a href="profile.html">Profile</a><a href="business.html">Business</a><a href="settings.html">Settings</a><a href="admin.html">Admin</a><a href="terms.html">Terms</a><a href="support.html">Support</a>
+</nav>
+
+</body>
+</html>
