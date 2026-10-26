@@ -93,13 +93,16 @@ function getApi() {
 }
 
 function requireLogin() {
-  if (!sessionStorage.getItem('sov_access_token')) {
-    $('status').textContent = 'Please sign in with Google to use the Home Feed.';
+  const token = sessionStorage.getItem('sov_access_token');
+
+  if (!token) {
+    $('status').textContent =
+      'Sign-in token missing. Please sign in again in this browser tab.';
     return false;
   }
+
   return true;
 }
-
 function formatDate(value) {
   if (!value) return '';
   const date = new Date(value);
