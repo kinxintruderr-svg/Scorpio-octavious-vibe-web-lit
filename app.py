@@ -29,8 +29,27 @@ BOOST_PACKAGES={
     'boost_60': {'amount': Decimal('60.00'), 'target_views': 100000},
     'boost_250': {'amount': Decimal('250.00'), 'target_views': 500000},
 }
-app=Flask(__name__)
-CORS(app, origins=os.getenv('CORS_ORIGINS','*').split(','), supports_credentials=False)
+
+app = Flask(__name__)
+
+# Allow the configured SOV Lite frontend origins.
+# Defaults to "*" only when CORS_ORIGINS is not configured.
+_raw_origins = os.getenv("CORS_ORIGINS", "*")
+
+_allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in _raw_origins.split(",")
+    if origin.strip()
+]
+
+CORS(
+    app,
+    resources={r"/api/*": {"origins": _allowed_origins}},
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+    supports_credentials=False,
+    max_age=600,
+)
 
 def now(): return datetime.now(timezone.utc).isoformat()
 def db():
