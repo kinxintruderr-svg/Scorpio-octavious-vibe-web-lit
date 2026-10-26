@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050914">
+  <title>SOV Lite | Dashboard</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      background: #050914;
+    }
+
+    header {
+      padding: 16px;
+      background: #09152b;
+      border-bottom: 1px solid #173b70;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      font-weight: bold;
+      font-size: 18px;
+      color: #65b2ff;
+    }
+
+    main {
+      max-width: 850px;
+      margin: 24px auto;
+      padding: 0 14px;
+    }
+
+    .card {
+      padding: 20px;
+      margin-bottom: 16px;
+      background: #0a1427;
+      border: 1px solid #173b70;
+      border-radius: 16px;
+    }
+
+    h1 { font-size: 25px; }
+    h2 { font-size: 19px; }
+    p { color: #c2cde0; line-height: 1.5; }
+
+    button, .button {
+      display: inline-block;
+      padding: 11px 16px;
+      color: white;
+      background: #1268d5;
+      border: 0;
+      border-radius: 9px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    button:disabled { opacity: .6; cursor: wait; }
+
+    .secondary {
+      background: #15243d;
+      border: 1px solid #2b4c7b;
+    }
+
+    input, textarea {
+      width: 100%;
+      margin: 8px 0 12px;
+      padding: 12px;
+      color: white;
+      background: #050b17;
+      border: 1px solid #29456f;
+      border-radius: 9px;
+      font: inherit;
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #profileAvatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #19365e;
+      border: 2px solid #368eff;
+    }
+
+    #profileName { font-weight: bold; color: #fff; }
+    #status { overflow-wrap: anywhere; }
+    .hidden { display: none !important; }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    nav a {
+      color: #cce4ff;
+      background: #10213b;
+      border-radius: 8px;
+      padding: 9px 11px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #8294af;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="brand">🦂 SOV Lite</div>
+      <button id="signOutButton" class="secondary" type="button">
+        Sign out
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="profile">
+        <img id="profileAvatar" alt="Profile picture"
+             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%2319365e'/%3E%3Ctext x='40' y='51' font-size='36' text-anchor='middle' fill='white'%3ES%3C/text%3E%3C/svg%3E">
+        <div>
+          <div id="profileName">Loading profile…</div>
+          <div id="profileEmail"></div>
+        </div>
+      </div>
+
+      <h1>Welcome to Scorpio Octavious Vibe</h1>
+      <p>Your SOV Lite dashboard.</p>
+      <p id="status" role="status" aria-live="polite">
+        Checking your secure sign-in…
+      </p>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <section class="card">
+        <h2>Home Feed</h2>
+        <p>Share an update with the SOV community.</p>
+
+        <form id="postForm">
+          <label for="postText">Your post</label>
+          <textarea id="postText" maxlength="5000"
+                    placeholder="What's happening?" required></textarea>
+          <button id="publishButton" type="submit">Publish post</button>
+        </form>
+
+        <p id="postStatus" role="status" aria-live="polite"></p>
+        <div id="feed"></div>
+      </section>
+
+      <section class="card">
+        <h2>SOV Services</h2>
+        <nav>
+          <a href="profile.html">Profile</a>
+          <a href="friends.html">Friends</a>
+          <a href="messages.html">Messages</a>
+          <a href="wallet.html">SOV Wallet</a>
+          <a href="reels.html">Reels</a>
+          <a href="games.html">Games &amp; Rewards</a>
+          <a href="tapjoy.html">Tapjoy Earn</a>
+          <a href="boost-ads.html">Boost Ads</a>
+          <a href="settings.html">Settings</a>
+        </nav>
+      </section>
+    </section>
+  </main>
+
+  <footer>Scorpio Octavious Vibe · SOV Lite</footer>
+
+  <script>
+    "use strict";
+
+    const API_BASE_URL =
+      "https://scorpio-octavious-vibe-api.onrender.com";
+
+    const TOKEN_KEY = "sov_access_token";
+    const USER_KEY = "sov_user";
+
+    const statusElement = document.getElementById("status");
+    const dashboard = document.getElementById("dashboard");
+    const feed = document.getElementById("feed");
+
+    function getToken() {
+      return sessionStorage.getItem(TOKEN_KEY);
+    }
+
+    function setStatus(message) {
+      statusElement.textContent = message;
+    }
+
+    function goToLogin() {
+      const next = "index.html";
+      window.location.replace(
+        "login.html?next=" + encodeURIComponent(next)
+      );
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+    }
+
+    async function apiFetch(path, options = {}) {
+      const token = getToken();
+
+      if (!token) {
+        throw new Error("Your sign-in session is missing.");
+      }
+
+      const headers = new Headers(options.headers || {});
+      headers.set("Authorization", "Bearer " + token);
+      headers.set("Accept", "application/json");
+
+      if (options.body && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
+
+      const response = await fetch(API_BASE_URL + path, {
+        ...options,
+        headers
+      });
+
+      if (response.status === 401) {
+        clearSession();
+        goToLogin();
+        throw new Error("Your session expired. Please sign in again.");
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "The API returned a non-JSON response. Check the API URL and backend route."
+        );
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || data.message || "The server request failed."
+        );
+      }
+
+      return data;
+    }
+
+    function displayUser(user) {
+      if (!user) return;
+
+      const name =
+        user.nickname ||
+        user.display_name ||
+        user.name ||
+        user.username ||
+        "SOV Member";
+
+      document.getElementById("profileName").textContent = name;
+      document.getElementById("profileEmail").textContent =
+        user.email || "";
+
+      const picture = user.picture || user.photo_url || user.avatar_url;
+
+      if (picture) {
+        try {
+          const url = new URL(picture);
+          if (url.protocol === "https:") {
+            document.getElementById("profileAvatar").src = url.href;
+          }
+        } catch {
+          // Ignore invalid profile image URLs.
+        }
+      }
+    }
+
+    async function loadProfile() {
+      const token = getToken();
+
+      if (!token) {
+        goToLogin();
+        return;
+      }
+
+      try {
+        const data = await apiFetch("/api/me");
+        const user = data.user || data;
+
+        displayUser(user);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+
+        dashboard.classList.remove("hidden");
+        setStatus("You're securely signed in.");
+        await loadFeed();
+
+      } catch (error) {
+        setStatus(error.message || "Unable to verify your sign-in.");
+
+        if (!getToken()) return;
+
+        // Keep the dashboard hidden when session verification fails.
+        dashboard.classList.add("hidden");
+      }
+    }
+
+    async function loadFeed() {
+      feed.replaceChildren();
+
+      try {
+        const data = await apiFetch("/api/posts");
+        const posts = Array.isArray(data)
+          ? data
+          : (data.posts || []);
+
+        if (!posts.length) {
+          const empty = document.createElement("p");
+          empty.textContent = "No posts yet. Be the first to share an update.";
+          feed.appendChild(empty);
+          return;
+        }
+
+        posts.forEach(post => {
+          const article = document.createElement("article");
+          article.className = "card";
+
+          const author = document.createElement("strong");
+          author.textContent =
+            post.nickname || post.author_name || post.username || "SOV Member";
+
+          const body = document.createElement("p");
+          body.textContent = post.text || post.content || "";
+
+          article.append(author, body);
+          feed.appendChild(article);
+        });
+
+      } catch (error) {
+        const message = document.createElement("p");
+        message.textContent =
+          "Feed unavailable: " + error.message +
+          " Your sign-in may still be active.";
+        feed.appendChild(message);
+      }
+    }
+
+    document.getElementById("postForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const text = document.getElementById("postText").value.trim();
+      const postStatus = document.getElementById("postStatus");
+      const publishButton = document.getElementById("publishButton");
+
+      if (!text) {
+        postStatus.textContent = "Please enter a post.";
+        return;
+      }
+
+      publishButton.disabled = true;
+      postStatus.textContent = "Publishing…";
+
+      try {
+        await apiFetch("/api/posts", {
+          method: "POST",
+          body: JSON.stringify({ text })
+        });
+
+        document.getElementById("postText").value = "";
+        postStatus.textContent = "Post published.";
+        await loadFeed();
+
+      } catch (error) {
+        postStatus.textContent = error.message;
+      } finally {
+        publishButton.disabled = false;
+      }
+    });
+
+    document.getElementById("signOutButton").addEventListener("click", () => {
+      clearSession();
+
+      if (window.google && window.google.accounts) {
+        window.google.accounts.id.disableAutoSelect();
+      }
+
+      goToLogin();
+    });
+
+    // Display the cached profile immediately while verifying the token.
+    try {
+      const cachedUser = sessionStorage.getItem(USER_KEY);
+      if (cachedUser) displayUser(JSON.parse(cachedUser));
+    } catch {
+      sessionStorage.removeItem(USER_KEY);
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
