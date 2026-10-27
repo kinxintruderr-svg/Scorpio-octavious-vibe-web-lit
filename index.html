@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050914">
+<title>SOV Lit| Home Feed</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#050914;
+  --panel:#0b1426;
+  --line:#203653;
+  --blue:#1687ff;
+  --light:#45b7ff;
+  --text:#eef5ff;
+  --muted:#9db0c9;
+}
+* { box-sizing:border-box; }
+html,body {
+  margin:0;
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+}
+body {
+  color:var(--text);
+  background:var(--bg);
+  font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+button,textarea,input { font:inherit; }
+button,a,label { touch-action:manipulation; }
+a { color:inherit; text-decoration:none; }
+button { cursor:pointer; }
+
+header {
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 14px;
+  background:#050914f5;
+  border-bottom:1px solid var(--line);
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  min-width:0;
+}
+.logo {
+  display:grid;
+  place-items:center;
+  flex:0 0 42px;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#1687ff,#063a86);
+  font-size:24px;
+}
+.sub {
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:2px;
+}
+.header-status {
+  color:#8dcaff;
+  font-size:11px;
+  text-align:right;
+}
+.layout {
+  width:100%;
+  max-width:1160px;
+  margin:auto;
+  padding:14px 12px 28px;
+  display:grid;
+  grid-template-columns:190px minmax(0,1fr) 215px;
+  gap:14px;
+}
+.panel {
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:linear-gradient(180deg,#101d33,#091120);
+  box-shadow:0 3px 14px #0002;
+}
+.sidebar,.right {
+  padding:12px;
+  align-self:start;
+  position:sticky;
+  top:72px;
+}
+.nav-title {
+  margin:5px 7px 10px;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:2px;
+}
+nav { display:grid; gap:5px; }
+.nav-link {
+  display:block;
+  padding:10px;
+  border-radius:10px;
+  font-size:13px;
+  white-space:nowrap;
+}
+.nav-link:hover,.nav-link.active { background:#10294a; }
+main {
+  min-width:0;
+  display:grid;
+  align-content:start;
+  gap:13px;
+}
+.welcome { padding:19px; }
+.eyebrow {
+  color:var(--light);
+  font-size:10px;
+  letter-spacing:2px;
+  font-weight:800;
+}
+h1 {
+  font-size:clamp(23px,4vw,33px);
+  line-height:1.2;
+  margin:8px 0;
+  overflow-wrap:anywhere;
+}
+h2 { margin:0; font-size:17px; }
+p { overflow-wrap:anywhere; }
+.welcome p,.right p { color:var(--muted); margin:0; }
+.notice {
+  padding:12px;
+  border:1px solid #5a4c26;
+  border-radius:12px;
+  background:#241e10;
+  color:#ffe4a6;
+  font-size:12px;
+}
+.composer { padding:15px; }
+.section-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+.muted { color:var(--muted); font-size:12px; }
+textarea {
+  display:block;
+  width:100%;
+  min-width:0;
+  min-height:95px;
+  resize:vertical;
+  padding:12px;
+  border:1px solid #294360;
+  border-radius:12px;
+  background:#07101f;
+  color:var(--text);
+  font-size:16px;
+}
+textarea:focus { outline:1px solid var(--light); }
+.tools {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:12px;
+}
+.file-label,.btn,.delete-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:10px 13px;
+  border-radius:11px;
+  font-size:13px;
+  font-weight:750;
+}
+.file-label {
+  border:1px solid #315273;
+  background:#0a1a2d;
+  color:#d6eaff;
+}
+input[type=file] {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+}
+.file-list {
+  margin-top:7px;
+  color:var(--muted);
+  font-size:12px;
+  overflow-wrap:anywhere;
+}
+.btn {
+  border:0;
+  background:linear-gradient(135deg,var(--blue),#0756c8);
+  color:white;
+}
+.btn:disabled { opacity:.5; }
+.feed { display:grid; gap:13px; }
+.empty { padding:25px 15px; text-align:center; color:var(--muted); }
+.post { padding:14px; overflow:hidden; }
+.author { display:flex; align-items:center; gap:10px; }
+.avatar {
+  display:grid;
+  place-items:center;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#1687ff,#082d65);
+  border:1px solid var(--light);
+}
+.post-time { color:var(--muted); font-size:11px; }
+.post-text {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  margin:13px 0;
+}
+.media-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:8px;
+}
+.post-media {
+  display:block;
+  width:100%;
+  max-width:100%;
+  max-height:65vh;
+  object-fit:contain;
+  background:#03060d;
+  border-radius:10px;
+}
+.post-footer { display:flex; justify-content:flex-end; margin-top:12px; }
+.delete-btn {
+  border:1px solid #693747;
+  background:#25121a;
+  color:#ffc1cc;
+}
+.right h2 { margin-bottom:10px; }
+.status { margin:12px 0; font-size:12px; color:#d4e2f5; }
+footer {
+  padding:0 12px 24px;
+  color:#7288a5;
+  text-align:center;
+  font-size:11px;
+}
+.toast {
+  display:none;
+  position:fixed;
+  z-index:20;
+  bottom:calc(16px + env(safe-area-inset-bottom));
+  left:4%;
+  width:92%;
+  padding:13px;
+  border:1px solid #315273;
+  border-radius:12px;
+  background:#12243b;
+  box-shadow:0 8px 25px #0008;
+  font-size:13px;
+}
+.toast.show { display:block; }
+
+@media(max-width:950px) {
+  .layout { grid-template-columns:165px minmax(0,1fr); }
+  .right { position:static; grid-column:2; }
+}
+@media(max-width:650px) {
+  header {
+    padding:9px 10px;
+    gap:7px;
+  }
+  .brand { font-size:12px; gap:8px; }
+  .logo { flex-basis:36px; width:36px; height:36px; font-size:21px; }
+  .header-status { font-size:10px; max-width:120px; }
+  .layout {
+    display:flex;
+    flex-direction:column;
+    gap:11px;
+    padding:10px 8px 24px;
+  }
+  .sidebar,.right,main { width:100%; min-width:0; }
+  .sidebar,.right { position:static; padding:10px; }
+  nav {
+    display:flex;
+    gap:5px;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    scrollbar-width:thin;
+  }
+  .nav-link { flex:0 0 auto; padding:9px 10px; }
+  .welcome,.composer,.post { padding:12px; }
+  h1 { font-size:clamp(22px,6.5vw,29px); }
+  .section-head { flex-wrap:wrap; }
+  .tools { flex-direction:column; align-items:stretch; }
+  .tools > div,.tools .btn,.file-label { width:100%; }
+  .file-label { text-align:center; }
+  .tools .btn { min-height:46px; }
+  .media-grid { grid-template-columns:minmax(0,1fr); }
+  .post-media { max-height:60vh; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    <span class="logo">♏</span>
+    <span>Scorpio Octavious Vibe<br><span class="sub">SOV LITE</span></span>
+  </a>
+  <div class="header-status">● Home Feed</div>
+</header>
+
+<div class="layout">
+  <aside class="panel sidebar">
+    <div class="nav-title">YOUR SPACE</div>
+    <nav>
+      <a class="nav-link active" href="index.html">⌂ Home Feed</a>
+      <a class="nav-link" href="reels.html">▶ Reels</a>
+      <a class="nav-link" href="friends.html">♧ Friends</a>
+      <a class="nav-link" href="messages.html">✉ Messages</a>
+      <a class="nav-link" href="profile.html">◉ Profile</a>
+      <a class="nav-link" href="wallet.html">◈ SOV Wallet</a>
+      <a class="nav-link" href="games.html">🎮 Games &amp; Rewards</a>
+      <a class="nav-link" href="tapjoy.html">🎁 Tapjoy Earn</a>
+      <a class="nav-link" href="boost-ads.html">🚀 Boost Ads</a>
+      <a class="nav-link" href="settings.html">⚙ Settings</a>
+    </nav>
+  </aside>
+
+  <main>
+    <section class="panel welcome">
+      <div class="eyebrow">CONNECT · CREATE · DISCOVER</div>
+      <h1>Welcome to Scorpio Octavious Vibe</h1>
+      <p>Share photos, write a post, or add a video to your Home Feed.</p>
+    </section>
+
+    <div class="notice">
+      <strong>Local preview:</strong> posts are saved in this browser on this device.
+      They are not visible to other users yet. Online publishing requires the SOV API
+      and media storage.
+    </div>
+
+    <section class="panel composer">
+      <div class="section-head">
+        <h2>Create a post</h2>
+        <span class="muted">Home Feed</span>
+      </div>
+      <label class="muted" for="postText">What would you like to share?</label>
+      <textarea id="postText" maxlength="5000" placeholder="Write something for your SOV community…"></textarea>
+      <div class="tools">
+        <div>
+          <label class="file-label" for="mediaFiles">＋ Add photos or videos</label>
+          <input id="mediaFiles" type="file" accept="image/*,video/*" multiple>
+          <div id="fileList" class="file-list">No media selected. Attachments are optional.</div>
+        </div>
+        <button id="publishBtn" class="btn" type="button">Save post on this device</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Your Home Feed</h2>
+        <span id="postCount" class="muted">0 posts</span>
+      </div>
+      <div id="feed" class="feed" aria-live="polite">
+        <div class="panel empty">Your feed is ready. Create your first post.</div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="panel right">
+    <h2>Feed information</h2>
+    <p>This Home Feed currently saves posts locally on this device.</p>
+    <div class="status">● Responsive mobile layout</div>
+    <div class="status">● Photo and video attachments</div>
+    <div class="status">● Delete your own preview posts</div>
+    <p>Real online posts and live advertising require their backend integrations.</p>
+  </aside>
+</div>
+
+<footer>Scorpio Octavious Vibe · SOV Lite</footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const DB_NAME = "sov_lite_home_preview";
+const STORE = "posts";
+const MAX_FILES = 6;
+const MAX_BYTES = 50 * 1024 * 1024;
+
+const textBox = document.getElementById("postText");
+const fileInput = document.getElementById("mediaFiles");
+const fileList = document.getElementById("fileList");
+const publishBtn = document.getElementById("publishBtn");
+const feed = document.getElementById("feed");
+const postCount = document.getElementById("postCount");
+const toast = document.getElementById("toast");
+
+let databasePromise;
+let toastTimer;
+let objectUrls = [];
+
+function notify(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
+}
+
+function openDB() {
+  if (databasePromise) return databasePromise;
+
+  databasePromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        const store = db.createObjectStore(STORE, { keyPath: "id" });
+        store.createIndex("createdAt", "createdAt");
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+
+  return databasePromise;
+}
+
+async function getPosts() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction(STORE, "readonly")
+      .objectStore(STORE).getAll();
+    request.onsuccess = () =>
+      resolve(request.result.sort((a, b) => b.createdAt - a.createdAt));
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function savePost(post) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(post);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+async function deletePost(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function releaseURLs() {
+  objectUrls.forEach(url => URL.revokeObjectURL(url));
+  objectUrls = [];
+}
+
+function createPost(post) {
+  const card = element("article", "panel post");
+  const author = element("div", "author");
+  const avatar = element("div", "avatar", "♏");
+  const details = element("div");
+  details.append(
+    element("div", "", "You"),
+    element("div", "post-time", new Date(post.createdAt).toLocaleString())
+  );
+  author.append(avatar, details);
+  card.append(author);
+
+  if (post.text) card.append(element("div", "post-text", post.text));
+
+  if (post.media.length) {
+    const grid = element("div", "media-grid");
+    post.media.forEach(file => {
+      const url = URL.createObjectURL(file.blob);
+      objectUrls.push(url);
+
+      let media;
+      if (file.type.startsWith("video/")) {
+        media = document.createElement("video");
+        media.controls = true;
+        media.playsInline = true;
+        media.preload = "metadata";
+      } else {
+        media = document.createElement("img");
+        media.alt = file.name || "Post photo";
+        media.loading = "lazy";
+      }
+
+      media.className = "post-media";
+      media.src = url;
+      grid.append(media);
+    });
+    card.append(grid);
+  }
+
+  const footer = element("div", "post-footer");
+  const remove = element("button", "delete-btn", "Delete my post");
+  remove.type = "button";
+
+  remove.addEventListener("click", async () => {
+    if (!confirm("Delete this post from this device?")) return;
+    try {
+      await deletePost(post.id);
+      await renderFeed();
+      notify("Post deleted from this device.");
+    } catch {
+      notify("Could not delete this post.");
+    }
+  });
+
+  footer.append(remove);
+  card.append(footer);
+  return card;
+}
+
+async function renderFeed() {
+  releaseURLs();
+  try {
+    const posts = await getPosts();
+    feed.replaceChildren();
+    postCount.textContent = `${posts.length} ${posts.length === 1 ? "post" : "posts"}`;
+
+    if (!posts.length) {
+      feed.append(element("div", "panel empty",
+        "Your feed is ready. Create your first post."));
+      return;
+    }
+
+    posts.forEach(post => feed.append(createPost(post)));
+  } catch {
+    feed.replaceChildren(element("div", "panel empty",
+      "Local storage is unavailable in this browser."));
+  }
+}
+
+fileInput.addEventListener("change", () => {
+  const files = Array.from(fileInput.files || []);
+
+  if (files.length > MAX_FILES) {
+    fileInput.value = "";
+    fileList.textContent = "Choose no more than 6 files.";
+    notify("You can attach up to 6 files per post.");
+    return;
+  }
+
+  if (files.some(file => file.size > MAX_BYTES)) {
+    fileInput.value = "";
+    fileList.textContent = "Each file must be 50 MB or smaller.";
+    notify("Please choose smaller photos or videos.");
+    return;
+  }
+
+  if (files.some(file =>
+    !file.type.startsWith("image/") && !file.type.startsWith("video/")
+  )) {
+    fileInput.value = "";
+    fileList.textContent = "Images and videos only.";
+    notify("Please choose image or video files.");
+    return;
+  }
+
+  fileList.textContent = files.length
+    ? files.map(file => file.name).join(", ")
+    : "No media selected. Attachments are optional.";
+});
+
+publishBtn.addEventListener("click", async () => {
+  const text = textBox.value.trim();
+  const files = Array.from(fileInput.files || []);
+
+  if (!text && !files.length) {
+    notify("Write something or select a photo/video first.");
+    return;
+  }
+
+  publishBtn.disabled = true;
+  publishBtn.textContent = "Saving…";
+
+  try {
+    const post = {
+      id: crypto.randomUUID
+        ? crypto.randomUUID()
+        : `post-${Date.now()}-${Math.random()}`,
+      text,
+      createdAt: Date.now(),
+      media: files.map(file => ({
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        blob: file.slice(0, file.size, file.type)
+      }))
+    };
+
+    await savePost(post);
+    textBox.value = "";
+    fileInput.value = "";
+    fileList.textContent = "No media selected. Attachments are optional.";
+    await renderFeed();
+    notify("Saved on this device. This post is not online yet.");
+  } catch {
+    notify("Could not save. Your browser may be out of storage.");
+  } finally {
+    publishBtn.disabled = false;
+    publishBtn.textContent = "Save post on this device";
+  }
+});
+
+window.addEventListener("beforeunload", releaseURLs);
+renderFeed();
+</script>
+</body>
+</html>
