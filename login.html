@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050914">
+  <title>Login & Register | Scorpio Octavious Vibe</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050914;
+      --panel: #0d1628;
+      --blue: #168bff;
+      --blue2: #0757d8;
+      --text: #f5f8ff;
+      --muted: #a8b6cc;
+      --border: #203452;
+      --error: #ff7777;
+      --success: #65e6ad;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at top, #10254a 0, transparent 55%),
+        var(--bg);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      padding: 28px 22px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(13, 22, 40, .98);
+      box-shadow: 0 18px 70px rgba(0, 0, 0, .35);
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      background: #07152b;
+      font-size: 36px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: clamp(23px, 5vw, 29px);
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #081122;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--blue2);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    form {
+      display: grid;
+      gap: 13px;
+    }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #081122;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid rgba(22, 139, 255, .4);
+      border-color: var(--blue);
+    }
+
+    .primary {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #status {
+      min-height: 44px;
+      margin-top: 16px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #081122;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    #status.error {
+      color: var(--error);
+      border-color: #703344;
+    }
+
+    #status.success {
+      color: var(--success);
+      border-color: #1d674d;
+    }
+
+    .small {
+      margin: 17px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .forgot {
+      text-align: right;
+      font-size: 13px;
+    }
+
+    a {
+      color: #70b7ff;
+    }
+
+    @media (max-width: 360px) {
+      .name-row {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 22px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="logo" aria-hidden="true">🦂</div>
+
+    <h1>Scorpio Octavious Vibe</h1>
+
+    <p class="subtitle">
+      Create your SOV Lite account or sign in to continue.
+    </p>
+
+    <div class="tabs">
+      <button
+        type="button"
+        class="tab active"
+        id="registerTab"
+        aria-selected="true">
+        Register
+      </button>
+
+      <button
+        type="button"
+        class="tab"
+        id="loginTab"
+        aria-selected="false">
+        Log in
+      </button>
+    </div>
+
+    <!-- REGISTRATION -->
+    <form id="registerForm" autocomplete="on">
+      <div class="name-row">
+        <div>
+          <label for="firstName">First name</label>
+          <input
+            id="firstName"
+            name="given-name"
+            autocomplete="given-name"
+            maxlength="60"
+            required>
+        </div>
+
+        <div>
+          <label for="lastName">Last name</label>
+          <input
+            id="lastName"
+            name="family-name"
+            autocomplete="family-name"
+            maxlength="60"
+            required>
+        </div>
+      </div>
+
+      <div>
+        <label for="regEmail">Email address</label>
+        <input
+          id="regEmail"
+          name="email"
+          type="email"
+          autocomplete="email"
+          maxlength="254"
+          required>
+      </div>
+
+      <div>
+        <label for="dob">Date of birth</label>
+        <input
+          id="dob"
+          name="bday"
+          type="date"
+          autocomplete="bday"
+          required>
+      </div>
+
+      <div>
+        <label for="regPassword">Create password</label>
+        <input
+          id="regPassword"
+          name="new-password"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          required>
+      </div>
+
+      <div>
+        <label for="confirmPassword">Confirm password</label>
+        <input
+          id="confirmPassword"
+          name="confirm-password"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          required>
+      </div>
+
+      <button class="primary" id="registerButton" type="submit">
+        Create account
+      </button>
+    </form>
+
+    <!-- LOGIN -->
+    <form id="loginForm" class="hidden" autocomplete="on">
+      <div>
+        <label for="loginEmail">Email address</label>
+        <input
+          id="loginEmail"
+          name="email"
+          type="email"
+          autocomplete="username"
+          maxlength="254"
+          required>
+      </div>
+
+      <div>
+        <label for="loginPassword">Password</label>
+        <input
+          id="loginPassword"
+          name="current-password"
+          type="password"
+          autocomplete="current-password"
+          required>
+      </div>
+
+      <div class="forgot">
+        <a href="forgot-password.html">Forgot password?</a>
+      </div>
+
+      <button class="primary" id="loginButton" type="submit">
+        Sign in
+      </button>
+    </form>
+
+    <div id="status" role="status" aria-live="polite">
+      Register for your SOV Lite account to get started.
+    </div>
+
+    <p class="small">
+      Your account details should remain saved when you log out.
+      Logging out ends your session; it should not delete your account.
+      Keep your password private.
+    </p>
+  </main>
+
+  <script>
+    "use strict";
+
+    // SOV Lite API configuration
+    const API_BASE =
+      "https://scorpio-octavious-vibe-api.onrender.com";
+
+    const TOKEN_KEY = "sov_access_token";
+    const USER_KEY = "sov_user";
+
+    const registerForm =
+      document.getElementById("registerForm");
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const registerTab =
+      document.getElementById("registerTab");
+
+    const loginTab =
+      document.getElementById("loginTab");
+
+    const statusBox =
+      document.getElementById("status");
+
+    // Safe local-page redirect.
+    function getNextPage() {
+      const params =
+        new URLSearchParams(window.location.search);
+
+      const next = params.get("next");
+
+      if (next && /^[a-zA-Z0-9_-]+\.html$/.test(next)) {
+        return next;
+      }
+
+      return "index.html";
+    }
+
+    function showStatus(message, type = "") {
+      statusBox.textContent = message;
+      statusBox.className = type;
+    }
+
+    function setPage(page) {
+      const showRegister = page === "register";
+
+      registerForm.classList.toggle(
+        "hidden",
+        !showRegister
+      );
+
+      loginForm.classList.toggle(
+        "hidden",
+        showRegister
+      );
+
+      registerTab.classList.toggle(
+        "active",
+        showRegister
+      );
+
+      loginTab.classList.toggle(
+        "active",
+        !showRegister
+      );
+
+      registerTab.setAttribute(
+        "aria-selected",
+        String(showRegister)
+      );
+
+      loginTab.setAttribute(
+        "aria-selected",
+        String(!showRegister)
+      );
+
+      showStatus(
+        showRegister
+          ? "Enter your details to create an account."
+          : "Enter your registered email and password."
+      );
+    }
+
+    registerTab.addEventListener("click", () => {
+      setPage("register");
+    });
+
+    loginTab.addEventListener("click", () => {
+      setPage("login");
+    });
+
+    // API helper with timeout and readable error handling.
+    async function apiRequest(path, body) {
+      let response;
+
+      try {
+        response = await fetch(API_BASE + path, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(20000)
+        });
+      } catch (error) {
+        throw new Error(
+          "Could not connect to the SOV API. Check your " +
+          "internet connection and confirm that the Render API is running."
+        );
+      }
+
+      const raw = await response.text();
+      let data;
+
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch (error) {
+        throw new Error(
+          "The SOV API returned a non-JSON response (HTTP " +
+          response.status + "). Check the backend deployment."
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Request failed (HTTP " + response.status + ")."
+        );
+      }
+
+      return data;
+    }
+
+    function getToken(data) {
+      return (
+        data.token ||
+        data.access_token ||
+        data.accessToken ||
+        null
+      );
+    }
+
+    function saveSession(data) {
+      const token = getToken(data);
+
+      if (!token) {
+        throw new Error(
+          "The API did not return an authentication token. " +
+          "Check the registration/login backend response."
+        );
+      }
+
+      // Session token only: account data belongs in the backend database.
+      sessionStorage.setItem(TOKEN_KEY, token);
+
+      sessionStorage.setItem(
+        USER_KEY,
+        JSON.stringify(data.user || data)
+      );
+    }
+
+    function openDashboard() {
+      showStatus(
+        "Authentication successful. Opening SOV Lite…",
+        "success"
+      );
+
+      window.location.replace(getNextPage());
+    }
+
+    // REGISTER
+    registerForm.addEventListener(
+      "submit",
+      async function (event) {
+        event.preventDefault();
+
+        const first_name =
+          document.getElementById("firstName")
+            .value.trim();
+
+        const last_name =
+          document.getElementById("lastName")
+            .value.trim();
+
+        const email =
+          document.getElementById("regEmail")
+            .value.trim().toLowerCase();
+
+        const date_of_birth =
+          document.getElementById("dob").value;
+
+        const password =
+          document.getElementById("regPassword").value;
+
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        if (
+          !first_name ||
+          !last_name ||
+          !email ||
+          !date_of_birth ||
+          !password
+        ) {
+          showStatus(
+            "Please complete every registration field.",
+            "error"
+          );
+          return;
+        }
+
+        if (password.length < 8) {
+          showStatus(
+            "Your password must contain at least 8 characters.",
+            "error"
+          );
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showStatus(
+            "Your passwords do not match.",
+            "error"
+          );
+          return;
+        }
+
+        const dobDate = new Date(
+          date_of_birth + "T00:00:00"
+        );
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (
+          Number.isNaN(dobDate.getTime()) ||
+          dobDate >= today
+        ) {
+          showStatus(
+            "Please enter a valid date of birth in the past.",
+            "error"
+          );
+          return;
+        }
+
+        const button =
+          document.getElementById("registerButton");
+
+        button.disabled = true;
+        button.textContent = "Creating account…";
+
+        try {
+          const data = await apiRequest(
+            "/api/auth/register",
+            {
+              first_name: first_name,
+              last_name: last_name,
+              name: first_name + " " + last_name,
+              email: email,
+              date_of_birth: date_of_birth,
+              password: password
+            }
+          );
+
+          saveSession(data);
+          openDashboard();
+
+        } catch (error) {
+          console.error("SOV registration error:", error);
+
+          showStatus(
+            error.message || "Registration failed.",
+            "error"
+          );
+
+        } finally {
+          button.disabled = false;
+          button.textContent = "Create account";
+        }
+      }
+    );
+
+    // LOGIN
+    loginForm.addEventListener(
+      "submit",
+      async function (event) {
+        event.preventDefault();
+
+        const email =
+          document.getElementById("loginEmail")
+            .value.trim().toLowerCase();
+
+        const password =
+          document.getElementById("loginPassword").value;
+
+        if (!email || !password) {
+          showStatus(
+            "Enter your email address and password.",
+            "error"
+          );
+          return;
+        }
+
+        const button =
+          document.getElementById("loginButton");
+
+        button.disabled = true;
+        button.textContent = "Signing in…";
+
+        try {
+          const data = await apiRequest(
+            "/api/auth/login",
+            {
+              email: email,
+              password: password
+            }
+          );
+
+          saveSession(data);
+          openDashboard();
+
+        } catch (error) {
+          console.error("SOV login error:", error);
+
+          showStatus(
+            error.message || "Login failed.",
+            "error"
+          );
+
+        } finally {
+          button.disabled = false;
+          button.textContent = "Sign in";
+        }
+      }
+    );
+
+    // Existing valid sessions can return to the dashboard.
+    async function checkExistingSession() {
+      const token =
+        sessionStorage.getItem(TOKEN_KEY);
+
+      if (!token) return;
+
+      try {
+        const response = await fetch(
+          API_BASE + "/api/me",
+          {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+              "Authorization": "Bearer " + token
+            },
+            signal: AbortSignal.timeout(12000)
+          }
+        );
+
+        if (response.ok) {
+          openDashboard();
+          return;
+        }
+
+        if (response.status === 401 ||
+            response.status === 403) {
+          sessionStorage.removeItem(TOKEN_KEY);
+          sessionStorage.removeItem(USER_KEY);
+        }
+
+      } catch (error) {
+        console.warn(
+          "Could not verify existing SOV session:",
+          error
+        );
+      }
+    }
+
+    checkExistingSession();
+  </script>
+</body>
+</html>
