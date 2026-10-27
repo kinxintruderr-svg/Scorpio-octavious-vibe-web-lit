@@ -171,13 +171,11 @@
         });
 
         if (!check.ok) {
-          sessionStorage.removeItem(TOKEN_KEY);
-          sessionStorage.removeItem(USER_KEY);
-          throw new Error(
-            "Sign-in was not confirmed by the server. Please try again."
-          );
-        }
-
+  const details = await check.text();
+  throw new Error(
+    `Token verification failed (${check.status}): ${details.slice(0, 180)}`
+  );
+}
         const me = await check.json();
 
         if (me.user) {
