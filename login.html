@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050914">
+  <title>Sign In | Scorpio Octavious Vibe</title>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050914;
+      --panel: #0d1628;
+      --blue: #168bff;
+      --blue2: #0757d8;
+      --text: #f5f8ff;
+      --muted: #a8b6cc;
+      --border: #203452;
+      --error: #ff7777;
+      --success: #65e6ad;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at top, #10254a 0, transparent 55%),
+        var(--bg);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      padding: 30px 24px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(13, 22, 40, .97);
+      box-shadow: 0 18px 70px rgba(0, 0, 0, .35);
+    }
+
+    .logo {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      background: #07152b;
+      font-size: 37px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(23px, 5vw, 30px);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .google-area {
+      min-height: 46px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    #status {
+      min-height: 48px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #081122;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    #status.error {
+      color: var(--error);
+      border-color: #703344;
+    }
+
+    #status.success {
+      color: var(--success);
+      border-color: #1d674d;
+    }
+
+    .small {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .retry {
+      display: none;
+      margin: 14px auto 0;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--blue);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .retry:focus-visible,
+    a:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 3px;
+    }
+
+    a { color: #70b7ff; }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="logo" aria-hidden="true">🦂</div>
+
+    <h1>Welcome to Scorpio Octavious Vibe</h1>
+    <p class="subtitle">
+      Sign in with Google to continue to your SOV Lite Dashboard.
+    </p>
+
+    <div class="google-area">
+      <div id="googleButton"></div>
+    </div>
+
+    <div id="status" role="status" aria-live="polite">
+      Preparing Google Sign-In…
+    </div>
+
+    <button id="retryButton" class="retry" type="button">
+      Try Google Sign-In Again
+    </button>
+
+    <p class="small">
+      By continuing, you agree to follow the platform's rules and policies.
+      Keep your Google account secure.
+    </p>
+  </main>
+
+  <script>
+    "use strict";
+
+    // Existing SOV Lite deployment configuration.
+    const API_BASE = "https://scorpio-octavious-vibe-api.onrender.com";
+    const GOOGLE_CLIENT_ID =
+      "395329819255-0d9njnjr7v5d3orl3jatg993a7qgjtmi.apps.googleusercontent.com";
+
+    const TOKEN_KEY = "sov_access_token";
+    const USER_KEY = "sov_user";
+
+    const statusBox = document.getElementById("status");
+    const googleButton = document.getElementById("googleButton");
+    const retryButton = document.getElementById("retryButton");
+
+    let signInInProgress = false;
+
+    function showStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = type || "";
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+    }
+
+    function getSafeNextPath() {
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next");
+
+      // Only allow a simple local HTML filename, not an external URL.
+      if (next && /^[a-zA-Z0-9_-]+\.html$/.test(next)) {
+        return next;
+      }
+
+      return "index.html";
+    }
+
+    async function readResponse(response) {
+      const raw = await response.text();
+
+      let data;
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch (_) {
+        throw new Error(
+          "The SOV API returned a non-JSON response (HTTP " +
+          response.status +
+          "). Check the API URL and Render deployment."
+        );
+      }
+
+      if (!response.ok) {
+        const message =
+          data.message ||
+          data.error ||
+          data.detail ||
+          ("API request failed (HTTP " + response.status + ").");
+
+        throw new Error(message);
+      }
+
+      return data;
+    }
+
+    async function apiRequest(path, options) {
+      const response = await fetch(API_BASE + path, {
+        ...options,
+        headers: {
+          "Accept": "application/json",
+          ...(options && options.headers ? options.headers : {})
+        }
+      });
+
+      return readResponse(response);
+    }
+
+    async function verifySession(token) {
+      return apiRequest("/api/me", {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+    }
+
+    function extractToken(data) {
+      // Support common token names returned by different backend versions.
+      return data.access_token || data.accessToken || data.token || null;
+    }
+
+    async function handleGoogleCredential(response) {
+      if (signInInProgress) return;
+      signInInProgress = true;
+      retryButton.style.display = "none";
+
+      showStatus("Google account received. Signing in to SOV Lite…");
+
+      try {
+        if (!response || !response.credential) {
+          throw new Error("Google did not return a sign-in credential. Please try again.");
+        }
+
+        // Send the Google ID token to your backend for server-side verification.
+        const loginData = await apiRequest("/api/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            credential: response.credential
+          })
+        });
+
+        const token = extractToken(loginData);
+
+        if (!token) {
+          throw new Error(
+            "The API accepted the request but did not return an access token. " +
+            "Check the backend /api/auth/google response."
+          );
+        }
+
+        // Verify the session before saving it and redirecting.
+        const me = await verifySession(token);
+
+        sessionStorage.setItem(TOKEN_KEY, token);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(me.user || me));
+
+        showStatus("Sign-in successful. Opening your Dashboard…", "success");
+
+        window.location.replace(getSafeNextPath());
+      } catch (error) {
+        clearSession();
+
+        console.error("SOV Google Sign-In error:", error);
+        showStatus(
+          error && error.message
+            ? error.message
+            : "Sign-in failed. Please try again.",
+          "error"
+        );
+
+        retryButton.style.display = "inline-block";
+      } finally {
+        signInInProgress = false;
+      }
+    }
+
+    function initializeGoogleSignIn() {
+      if (!window.google || !window.google.accounts ||
+          !window.google.accounts.id) {
+        showStatus("Loading Google Sign-In. Please wait…");
+        return false;
+      }
+
+      try {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+          auto_select: false,
+          cancel_on_tap_outside: true
+        });
+
+        googleButton.innerHTML = "";
+
+        google.accounts.id.renderButton(googleButton, {
+          type: "standard",
+          theme: "filled_blue",
+          size: "large",
+          text: "continue_with",
+          shape: "rectangular",
+          logo_alignment: "left",
+          width: 280
+        });
+
+        showStatus("Choose your Google account to continue.");
+        return true;
+      } catch (error) {
+        console.error("Google Sign-In initialization error:", error);
+        showStatus(
+          "Google Sign-In could not initialize. Check your Google OAuth client ID and authorized website origins.",
+          "error"
+        );
+        retryButton.style.display = "inline-block";
+        return false;
+      }
+    }
+
+    retryButton.addEventListener("click", function () {
+      if (!initializeGoogleSignIn()) {
+        showStatus(
+          "Google Sign-In is still loading. Refresh the page and try again.",
+          "error"
+        );
+      }
+    });
+
+    // Do not assume an old token is valid: verify it against the API first.
+    async function checkExistingSession() {
+      const existingToken = sessionStorage.getItem(TOKEN_KEY);
+      if (!existingToken) return;
+
+      showStatus("Checking your existing SOV session…");
+
+      try {
+        const me = await verifySession(existingToken);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(me.user || me));
+        window.location.replace(getSafeNextPath());
+      } catch (error) {
+        console.warn("Existing SOV session is not valid:", error);
+        clearSession();
+        showStatus("Please sign in with Google to continue.");
+      }
+    }
+
+    async function start() {
+      await checkExistingSession();
+
+      // Google GIS is loaded asynchronously. Retry initialization briefly.
+      let attempts = 0;
+      const maxAttempts = 30;
+
+      const timer = window.setInterval(function () {
+        attempts++;
+
+        if (initializeGoogleSignIn() || attempts >= maxAttempts) {
+          window.clearInterval(timer);
+
+          if (attempts >= maxAttempts &&
+              !(window.google && window.google.accounts &&
+                window.google.accounts.id)) {
+            showStatus(
+              "Google Sign-In did not load. Check your internet connection or content blockers.",
+              "error"
+            );
+            retryButton.style.display = "inline-block";
+          }
+        }
+      }, 300);
+    }
+
+    start();
+  </script>
+</body>
+</html>
+```
