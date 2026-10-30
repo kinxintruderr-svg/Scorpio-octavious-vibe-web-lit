@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOV Lite - Boost Ads</title>
+<style>
+:root{--blue:#1677ff;--bg:#060910;--panel:#101725;--line:#25344b;--muted:#aab8cc}
+*{box-sizing:border-box}
+html,body{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif;padding-bottom:75px}
+header{background:#090e18;padding:16px;border-bottom:1px solid var(--line);font-size:20px;font-weight:bold}
+header span{color:var(--blue)}
+nav{display:flex;gap:8px;overflow-x:auto;padding:11px;background:#090e18;max-width:100%;-webkit-overflow-scrolling:touch}
+nav a{flex:0 0 auto;background:#172235;color:#dce8ff;padding:9px 12px;border-radius:9px;text-decoration:none;white-space:nowrap;font-size:13px}
+main{max-width:850px;margin:auto;padding:15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:15px;min-width:0}
+h2{font-size:18px;margin:0 0 12px}
+h3{margin:10px 0}
+label{display:block;font-size:14px;margin-top:10px}
+input,textarea,select{width:100%;max-width:100%;min-width:0;padding:12px;margin:7px 0 12px;background:#080d16;color:white;border:1px solid #344258;border-radius:9px;font:inherit}
+textarea{min-height:75px;resize:vertical}
+button{background:var(--blue);color:white;border:0;border-radius:9px;padding:11px 14px;font-weight:bold;cursor:pointer;min-height:42px}
+button.secondary{background:#29374b}
+button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px}
+.package{background:#0b1321;border:1px solid #315da0;border-radius:12px;padding:15px;min-width:0}
+.package.selected{border:2px solid #55a0ff;box-shadow:0 0 12px #1677ff40}
+.price{font-size:28px;font-weight:bold;color:#8dbaff;margin:10px 0}
+.tag{display:inline-block;background:#17355c;color:#c5ddff;padding:5px 8px;border-radius:6px;font-size:12px}
+.muted,small{color:var(--muted)}
+.notice{padding:12px;border:1px solid #66531c;background:#241e0c;color:#ffe5a5;border-radius:9px;font-size:13px;line-height:1.5}
+.campaign{padding:14px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.campaign:last-child{border-bottom:0}
+.status{font-size:13px;color:#91bdff;line-height:1.5;overflow-wrap:anywhere}
+progress{width:100%;height:12px;accent-color:var(--blue)}
+footer{text-align:center;color:#77859a;padding:20px;font-size:12px}
+#sov-connected-nav{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:rgba(5,10,20,.97);border-top:1px solid #1d69ad;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));display:flex;gap:7px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+#sov-connected-nav a{flex:0 0 auto;text-decoration:none;color:#eaf4ff;background:#101e31;border:1px solid #234a72;border-radius:10px;padding:9px 11px;font:600 12px Arial,sans-serif}
+#sov-connected-nav a:focus,#sov-connected-nav a:hover{background:#087fe5;color:#fff}
+@media(max-width:700px){
+header{padding:12px}
+main{width:100%;max-width:100%;padding:10px}
+.panel{padding:12px;border-radius:12px}
+.grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:380px){
+header{padding:10px}
+main{padding:8px}
+.panel{padding:10px}
+button{font-size:14px}
+}
+</style>
+</head>
+
+<body>
+<header>🦂 SOV <span>BOOST ADS</span></header>
+
+<nav aria-label="Main navigation">
+<a href="index.html">Home</a>
+<a href="profile.html">Profile</a>
+<a href="friends.html">Friends</a>
+<a href="messages.html">Messages</a>
+<a href="reels.html">Reels</a>
+<a href="wallet.html">SOV Wallet</a>
+<a href="games.html">Games &amp; Rewards</a>
+<a href="boost-ads.html">Boost Ads</a>
+</nav>
+
+<main>
+
+<section class="panel">
+<h2>🚀 Promote your content</h2>
+<p class="muted">Choose a package and pay through the connected SOV Lite backend.</p>
+<div class="notice">
+Flutterwave checkout is configured for test transactions.
+A campaign is only marked paid after the server verifies the transaction.
+Payment confirmation does not itself deliver views; the ad-delivery system must be connected separately.
+</div>
+<p id="connectionStatus" class="status">Checking SOV Lite connection…</p>
+</section>
+
+<section class="panel">
+<h2>📦 Boost Ads Prices &amp; Target Views</h2>
+<p class="muted">Choose a package that suits your campaign.</p>
+
+<div class="grid" id="packages">
+
+<div class="package" data-package="boost_10">
+<span class="tag">Starter</span>
+<div class="price">$10</div>
+<h3>10,000 target views</h3>
+<p class="muted">For a small campaign.</p>
+<button type="button" onclick="chooseBoost('boost_10')">Choose package</button>
+</div>
+
+<div class="package" data-package="boost_20">
+<span class="tag">Growth</span>
+<div class="price">$20</div>
+<h3>25,000 target views</h3>
+<p class="muted">For growing your audience.</p>
+<button type="button" onclick="chooseBoost('boost_20')">Choose package</button>
+</div>
+
+<div class="package" data-package="boost_35">
+<span class="tag">Popular</span>
+<div class="price">$35</div>
+<h3>50,000 target views</h3>
+<p class="muted">For wider promotion.</p>
+<button type="button" onclick="chooseBoost('boost_35')">Choose package</button>
+</div>
+
+<div class="package" data-package="boost_60">
+<span class="tag">Pro</span>
+<div class="price">$60</div>
+<h3>100,000 target views</h3>
+<p class="muted">For larger campaigns.</p>
+<button type="button" onclick="chooseBoost('boost_60')">Choose package</button>
+</div>
+
+<div class="package" data-package="boost_250">
+<span class="tag">Viral</span>
+<div class="price">$250</div>
+<h3>500,000 target views</h3>
+<p class="muted">For high-volume promotion.</p>
+<button type="button" onclick="chooseBoost('boost_250')">Choose package</button>
+</div>
+
+</div>
+<p id="packageStatus" class="status">No package selected yet.</p>
+</section>
+
+<section class="panel" id="createCampaign">
+<h2>📝 Campaign details</h2>
+
+<label for="campaignName">Campaign name</label>
+<input id="campaignName" maxlength="80" placeholder="e.g. My new SOV Reel">
+
+<label for="contentType">Content type</label>
+<select id="contentType">
+<option>Photo</option>
+<option>Video</option>
+<option>Reel</option>
+</select>
+
+<label for="campaignCaption">Campaign caption (for your reference)</label>
+<textarea id="campaignCaption" maxlength="500" placeholder="Tell people about your content"></textarea>
+
+<label for="targetViews">Target views</label>
+<input id="targetViews" type="number" value="10000" readonly>
+
+<label for="budget">Package price (USD)</label>
+<input id="budget" type="text" value="$10.00" readonly>
+
+<label for="paymentProvider">Payment method</label>
+<select id="paymentProvider">
+<option value="flutterwave">Flutterwave (test mode)</option>
+<option value="paypal">PayPal</option>
+</select>
+
+<p class="muted">
+Campaign name, content type and caption are displayed here for your reference.
+The current backend stores package/payment records only.
+</p>
+
+<button id="payButton" type="button" onclick="startPayment()">Continue to secure checkout</button>
+<p id="formStatus" class="status" role="status" aria-live="polite"></p>
+</section>
+
+<section class="panel">
+<h2>📊 My campaigns</h2>
+<button class="secondary" type="button" onclick="loadCampaigns()">Refresh campaigns</button>
+<div id="campaignList">
+<p class="muted">Sign in to load your campaigns.</p>
+</div>
+</section>
+
+<section class="panel">
+<h2>💳 Payment status</h2>
+<p class="muted">Payments are verified by the SOV Lite server. Never share your Flutterwave secret key in this page.</p>
+<p id="paymentInfo" class="status">Select a package and payment method to continue.</p>
+</section>
+
+</main>
+
+<footer>Scorpio Octavious Vibe · Boost Ads</footer>
+
+<script>
+const API_BASE = "https://scorpio-octavious-vibe-api.onrender.com";
+
+const packages = {
+  boost_10:{name:"Starter Boost",views:10000,price:10},
+  boost_20:{name:"Growth Boost",views:25000,price:20},
+  boost_35:{name:"Popular Boost",views:50000,price:35},
+  boost_60:{name:"Pro Boost",views:100000,price:60},
+  boost_250:{name:"Viral Boost",views:500000,price:250}
+};
+
+let selectedPackage = "boost_10";
+let busy = false;
+
+function getToken(){
+  return localStorage.getItem("sov_token") ||
+         sessionStorage.getItem("sov_token") || "";
+}
+
+function authHeaders(){
+  const token=getToken();
+  return token
+    ? {"Authorization":"Bearer "+token,"Content-Type":"application/json"}
+    : {"Content-Type":"application/json"};
+}
+
+function setStatus(id,message,isError=false){
+  const el=document.getElementById(id);
+  el.textContent=message;
+  el.style.color=isError?"#ff9b9b":"#91bdff";
+}
+
+async function api(path,options={}){
+  const response=await fetch(API_BASE+path,{
+    ...options,
+    headers:{...authHeaders(),...(options.headers||{})}
+  });
+
+  const data=await response.json().catch(()=>
+    ({error:"The API returned an unreadable response."})
+  );
+
+  if(!response.ok){
+    throw new Error(data.error||("Request failed ("+response.status+")."));
+  }
+
+  return data;
+}
+
+function chooseBoost(id){
+  if(!packages[id])return;
+
+  selectedPackage=id;
+  const pack=packages[id];
+
+  document.getElementById("targetViews").value=pack.views;
+  document.getElementById("budget").value="$"+pack.price.toFixed(2);
+
+  document.getElementById("packageStatus").textContent=
+    pack.name+" selected: "+
+    pack.views.toLocaleString()+
+    " target views for $"+pack.price.toFixed(2)+" USD.";
+
+  document.querySelectorAll(".package").forEach(card=>{
+    card.classList.toggle("selected",card.dataset.package===id);
+  });
+
+  document.getElementById("createCampaign").scrollIntoView({
+    behavior:"smooth"
+  });
+}
+
+async function checkConnection(){
+  try{
+    const data=await api("/api/boost/packages",{headers:{}});
+    setStatus(
+      "connectionStatus",
+      "Connected to SOV Lite API · "+
+      (data.paypal_mode==="sandbox"?"PayPal sandbox":"Boost packages loaded")+"."
+    );
+  }catch(e){
+    setStatus("connectionStatus","API connection check: "+e.message,true);
+  }
+}
+
+async function startPayment(){
+  if(busy)return;
+
+  if(!getToken()){
+    setStatus(
+      "formStatus",
+      "Please sign in with Google first, then return to Boost Ads.",
+      true
+    );
+    return;
+  }
+
+  const provider=document.getElementById("paymentProvider").value;
+  const button=document.getElementById("payButton");
+
+  busy=true;
+  button.disabled=true;
+  button.textContent="Preparing secure checkout…";
+
+  setStatus("formStatus","Creating your pending campaign. Please wait.");
+
+  try{
+    let result;
+
+    if(provider==="flutterwave"){
+      result=await api("/api/boost/flutterwave/create-checkout",{
+        method:"POST",
+        body:JSON.stringify({package_code:selectedPackage})
+      });
+
+      sessionStorage.setItem(
+        "sov_flw_pending",
+        JSON.stringify({
+          campaign_id:result.campaign_id,
+          tx_ref:result.tx_ref
+        })
+      );
+
+      setStatus("formStatus","Opening Flutterwave test checkout…");
+      window.location.assign(result.checkout_url);
+      return;
+
+    }else{
+      result=await api("/api/boost/paypal/create-order",{
+        method:"POST",
+        body:JSON.stringify({package_code:selectedPackage})
+      });
+
+      sessionStorage.setItem(
+        "sov_paypal_pending",
+        JSON.stringify({
+          campaign_id:result.campaign_id,
+          order_id:result.order_id
+        })
+      );
+
+      setStatus("formStatus","Opening PayPal checkout…");
+      window.location.assign(result.approve_url);
+      return;
+    }
+
+  }catch(e){
+    setStatus("formStatus",e.message,true);
+
+  }finally{
+    busy=false;
+    button.disabled=false;
+    button.textContent="Continue to secure checkout";
+  }
+}
+
+async function handlePaymentReturn(){
+  const url=new URL(window.location.href);
+  const flw=url.searchParams.get("flutterwave");
+  const paypal=url.searchParams.get("paypal");
+
+  if(flw==="return"){
+    const pending=JSON.parse(
+      sessionStorage.getItem("sov_flw_pending")||"null"
+    );
+
+    const status=url.searchParams.get("status");
+    const txRef=url.searchParams.get("tx_ref");
+    const transactionId=url.searchParams.get("transaction_id");
+
+    if(status==="successful" && pending &&
+       txRef===pending.tx_ref && transactionId){
+
+      setStatus(
+        "paymentInfo",
+        "Payment returned from Flutterwave. Verifying it securely with SOV Lite…"
+      );
+
+      try{
+        const result=await api("/api/boost/flutterwave/verify",{
+          method:"POST",
+          body:JSON.stringify({
+            campaign_id:pending.campaign_id,
+            tx_ref:txRef,
+            transaction_id:transactionId
+          })
+        });
+
+        setStatus(
+          "paymentInfo",
+          result.message+" Status: "+result.status+"."
+        );
+
+        sessionStorage.removeItem("sov_flw_pending");
+
+      }catch(e){
+        setStatus(
+          "paymentInfo",
+          "Payment could not yet be verified: "+e.message,
+          true
+        );
+      }
+
+    }else{
+      setStatus(
+        "paymentInfo",
+        "Flutterwave checkout was cancelled, unsuccessful, or returned without the required transaction details. No campaign has been marked paid.",
+        true
+      );
+    }
+
+    cleanReturnParams();
+  }
+
+  if(paypal==="return"){
+    const pending=JSON.parse(
+      sessionStorage.getItem("sov_paypal_pending")||"null"
+    );
+
+    const orderId=url.searchParams.get("token");
+
+    if(pending && orderId===pending.order_id){
+      setStatus(
+        "paymentInfo",
+        "PayPal returned. Capturing and verifying payment with SOV Lite…"
+      );
+
+      try{
+        const result=await api("/api/boost/paypal/capture",{
+          method:"POST",
+          body:JSON.stringify({
+            campaign_id:pending.campaign_id,
+            order_id:orderId
+          })
+        });
+
+        setStatus(
+          "paymentInfo",
+          result.message+" Status: "+result.status+"."
+        );
+
+        sessionStorage.removeItem("sov_paypal_pending");
+
+      }catch(e){
+        setStatus(
+          "paymentInfo",
+          "PayPal payment could not be verified: "+e.message,
+          true
+        );
+      }
+
+    }else{
+      setStatus(
+        "paymentInfo",
+        "PayPal return could not be matched to a pending campaign. Please refresh your campaigns.",
+        true
+      );
+    }
+
+    cleanReturnParams();
+  }
+
+  if(paypal==="cancel"){
+    setStatus(
+      "paymentInfo",
+      "PayPal checkout was cancelled. No payment has been confirmed."
+    );
+
+    sessionStorage.removeItem("sov_paypal_pending");
+    cleanReturnParams();
+  }
+}
+
+function cleanReturnParams(){
+  const url=new URL(window.location.href);
+
+  [
+    "flutterwave","paypal","status","tx_ref",
+    "transaction_id","transactionId","token","PayerID"
+  ].forEach(k=>url.searchParams.delete(k));
+
+  history.replaceState(
+    {},
+    document.title,
+    url.pathname+url.search+url.hash
+  );
+}
+
+function escapeHTML(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+async function loadCampaigns(){
+  const list=document.getElementById("campaignList");
+
+  if(!getToken()){
+    list.innerHTML=
+      '<p class="muted">Please sign in with Google to view your campaigns.</p>';
+    return;
+  }
+
+  list.innerHTML='<p class="muted">Loading campaigns…</p>';
+
+  try{
+    const data=await api("/api/boost/campaigns");
+    const rows=data.campaigns||[];
+
+    if(!rows.length){
+      list.innerHTML=
+        '<p class="muted">No campaigns found for this account yet.</p>';
+      return;
+    }
+
+    list.innerHTML=rows.map(c=>{
+      const target=Math.max(1,Number(c.target_views)||1);
+      const status=String(c.payment_status||"pending");
+
+      return `<div class="campaign">
+        <h3>${escapeHTML(c.package_code||"Boost campaign")}</h3>
+        <span class="tag">${escapeHTML(status.toUpperCase())}</span>
+        <p><strong>${target.toLocaleString()} target views</strong></p>
+        <p>Package: $${Number(c.amount_usd||0).toFixed(2)} USD</p>
+        <p>Payment: ${escapeHTML(c.payment_status||"unknown")}</p>
+        <p>Delivery: ${escapeHTML(c.delivery_status||"not_started")}</p>
+        <small>Created: ${escapeHTML(c.created_at||"")}</small>
+      </div>`;
+    }).join("");
+
+  }catch(e){
+    list.innerHTML=
+      '<p class="status">'+escapeHTML(e.message)+'</p>';
+  }
+}
+
+document.getElementById("paymentProvider").addEventListener("change",()=>{
+  const provider=document.getElementById("paymentProvider").value;
+
+  document.getElementById("paymentInfo").textContent=
+    provider==="flutterwave"
+      ? "Flutterwave is set to test checkout."
+      : "PayPal checkout uses the mode configured on the SOV Lite server.";
+});
+
+chooseBoost("boost_10");
+checkConnection();
+handlePaymentReturn();
+loadCampaigns();
+</script>
+
+<nav id="sov-connected-nav" aria-label="SOV Lite pages">
+<a href="index.html">Home</a>
+<a href="search.html">Search</a>
+<a href="reels.html">Reels</a>
+<a href="friends.html">Friends</a>
+<a href="messages.html">Messages</a>
+<a href="wallet.html">SOV Wallet</a>
+<a href="sov-crypto.html">SOV Crypto</a>
+<a href="earn.html">Earn</a>
+<a href="games.html">Games</a>
+<a href="boost-ads.html">Boost Ads</a>
+<a href="notifications.html">Notifications</a>
+<a href="profile.html">Profile</a>
+<a href="business.html">Business</a>
+<a href="settings.html">Settings</a>
+<a href="admin.html">Admin</a>
+<a href="terms.html">Terms</a>
+<a href="support.html">Support</a>
+</nav>
+
+</body>
+</html>
