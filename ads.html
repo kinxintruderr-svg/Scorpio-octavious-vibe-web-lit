@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOV LITE - Ads</title>
+<style>
+  body{margin:0; padding-bottom:70px; background:#000; color:#fff; font-family:Arial;}
+  #banner-ad{position:fixed; bottom:0; left:0; width:100%; height:60px; background:#111; border-top:1px solid #333; display:flex; align-items:center; justify-content:center; z-index:9999; font-size:14px;}
+  .song{padding:15px; border-bottom:1px solid #222; cursor:pointer;}
+  .song:hover{background:#1a1a1a;}
+</style>
+</head>
+<body>
+
+<h2 style="padding:15px;">SOV LITE Music</h2>
+
+<!-- Example songs - you replace with yours -->
+<div class="song">🎵 Song 1 - Ama Mapiano</div>
+<div class="song">🎵 Song 2 - SOV LITE Mix</div>
+<div class="song">🎵 Song 3 - Latest Hit</div>
+<div class="song">🎵 Song 4 - Download Test</div>
+<div class="song">🎵 Song 5 - Click to trigger ad counter</div>
+
+<p style="padding:15px; color:#888;">Click any song 3 times = Interstitial ad shows. Banner always at bottom.</p>
+
+<!-- BANNER - MUST BE HERE -->
+<div id="banner-ad">Loading AdMob...</div>
+
+<!-- ADS LOGIC -->
+<script>
+let adConfig = {};
+let playCount = parseInt(localStorage.getItem('sov_playcount') || '0');
+
+fetch('/admob-config')
+  .then(r => r.json())
+  .then(cfg => {
+    adConfig = cfg;
+    const bannerDiv = document.getElementById('banner-ad');
+    bannerDiv.innerHTML = "BANNER AD ID: " + (cfg.banner || "Not set yet");
+    console.log("AdMob linked:", cfg);
+  })
+  .catch(()=>{
+    document.getElementById('banner-ad').innerHTML = "AdMob config not found - add /admob-config route in server.js";
+  });
+
+function triggerAdOnPlay(){
+  playCount++;
+  localStorage.setItem('sov_playcount', playCount);
+  console.log("Play count:", playCount);
+  if(playCount % 3 === 0){
+    if(window.Android && window.Android.showInterstitial){
+      window.Android.showInterstitial(adConfig.interstitial);
+    } else {
+      // Web preview - shows alert, in APK will show real interstitial
+      alert("INTERSTITIAL AD WOULD SHOW NOW\nID: " + adConfig.interstitial + "\nCount: " + playCount);
+      // reset banner text for demo
+      document.getElementById('banner-ad').innerHTML = "Interstitial triggered! Count: " + playCount;
+      setTimeout(()=>{ document.getElementById('banner-ad').innerHTML = "BANNER: " + adConfig.banner; }, 2000);
+    }
+  }
+}
+
+document.addEventListener('click', (e)=>{
+  if(e.target.closest('.song')){
+    triggerAdOnPlay();
+  }
+});
+</script>
+
+</body>
+</html>
+
+
